@@ -7,8 +7,14 @@ require 'tile'
 function love.load()
 	globals = {}
 
+	globals.screen = {}
+	globals.screen.width = love.graphics.getWidth()
+	globals.screen.height = love.graphics.getHeight()
+	
 	globals.fps = 0
 	globals.dt = 0
+
+	globals.currentId = 1
 
 	globals.camera = Camera(400, 300)
 
@@ -19,17 +25,17 @@ function love.load()
 	globals.entities = {}
 
 	local bird = Bird(1)
-	table.insert(globals.entities, bird)
+	add_entity(bird)
 
-	globals.furthestTile = nil
+	furthestTile = nil
 	for i = 1, 20 do
-		local tile = Tile(i + 100, "assets/groundtop.png")
-		tile.position.x = (i - 1) * 64
-		tile.position.y = 600 - 64
-		table.insert(globals.entities, tile)
+		local tile = Tile(i + 100, "assets/grassMid.png")
+		tile.position.x = (i - 1) * 70
+		tile.position.y = 600 - 70
+		add_entity(tile)
 
-		if globals.furthestTile == nil or tile.position.x > globals.furthestTile.position.x then
-			globals.furthestTile = tile
+		if furthestTile == nil or tile.position.x > furthestTile.position.x then
+			furthestTile = tile
 		end
 	end
 	

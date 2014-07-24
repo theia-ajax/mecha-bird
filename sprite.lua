@@ -19,6 +19,14 @@ Sprite = Class
 		self.scale = Vector.one()
 
 		self.image = love.graphics.newImage(filename)
+
+		self.width = 0
+		self.height = 0
+
+		if self.image ~= nil then
+			self.width = self.image:getWidth()
+			self.height = self.image:getHeight()
+		end
 	end
 }
 

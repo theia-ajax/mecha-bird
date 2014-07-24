@@ -8,7 +8,7 @@ Bird = Class
 	name = "Bird",
 	inherits = { Entity },
 	function(self, id)
-		Entity.construct(self, id)
+		Entity.construct(self)
 
 		self.sprite = Sprite("assets/bird.png", self)
 
@@ -19,6 +19,8 @@ Bird = Class
 		self.position.y = 300
 
 		self.jumpPressed = false
+
+		self.floor = globals.screen.height - 134
 	end
 }
 
@@ -37,9 +39,9 @@ function Bird:update(dt)
 	local vel = self.velocity * dt
 	self.position = self.position + vel
 
-	if self.position.y > 472 then
+	if self.position.y > self.floor then
 		self.velocity.y = 0
-		self.position.y = 472
+		self.position.y = self.floor
 	end
 
 	self.sprite:update()
