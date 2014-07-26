@@ -3,6 +3,9 @@ Timer = require 'hump.timer'
 Camera = require 'hump.camera'
 require 'bird'
 require 'tile'
+require 'level'
+require 'util'
+require 'physics'
 
 function love.load()
 	globals = {}
@@ -10,6 +13,8 @@ function love.load()
 	globals.screen = {}
 	globals.screen.width = love.graphics.getWidth()
 	globals.screen.height = love.graphics.getHeight()
+
+	globals.debug = true
 	
 	globals.fps = 0
 	globals.dt = 0
@@ -18,26 +23,21 @@ function love.load()
 
 	globals.camera = Camera(400, 300)
 
+	globals.physics = Physics()
+
 	pxToMeter = 128
 	love.physics.setMeter(pxToMeter)
 	globals.world = love.physics.newWorld(0, 9.8 * pxToMeter, true)
 
 	globals.entities = {}
+	globals.entities.lock = false
 
 	local bird = Bird(1)
 	add_entity(bird)
 
-	furthestTile = nil
-	for i = 1, 20 do
-		local tile = Tile(i + 100, "assets/grassMid.png")
-		tile.position.x = (i - 1) * 70
-		tile.position.y = 600 - 70
-		add_entity(tile)
-
-		if furthestTile == nil or tile.position.x > furthestTile.position.x then
-			furthestTile = tile
-		end
-	end
+	globals.levelName = "assets/levels/testlevel.csv"
+    globals.level = Level()
+    globals.level:load(globals.levelName)
 	
 	Timer.addPeriodic(0.05, function() globals.fps = 1 / globals.dt end)
 end
@@ -46,16 +46,21 @@ function love.keypressed(key, unicode)
 	if key == "escape" then
 		love.event.push('quit')
 	end
+
+	if key == "r" then
+		globals.level:cleanup()
+		globals.level:load(globals.levelName)
+	end
 end
 
 function love.update(dt)
 	globals.dt = dt
 
-	globals.camera:move(200 * dt, 0)
-
-	for k, v in pairs(globals.entities) do
+	for i, v in ipairs(globals.entities) do
 		v:update(dt)
 	end
+
+	flush_dirty_entities()
 
 	globals.world:update(dt)
 	
@@ -63,16 +68,25 @@ function love.update(dt)
 	-- globals.camera:lookAt(math.floor(look.x), math.floor(look.y))
 	
 	Timer.update(dt)
+
+	globals.physics:update_collisions()
 end
 
 function love.draw()
 	globals.camera:attach()
 
-	for k, v in pairs(globals.entities) do
-		v:render()
+	for i, v in ipairs(globals.entities) do
+		if v ~= nil then
+			v:render()
+		end
+	end
+
+	if globals.debug then
+		globals.physics:debug_draw()
 	end
 
 	globals.camera:detach()
 
+	love.graphics.setColor(255, 255, 255)
 	love.graphics.print("FPS : "..string.format("%.0f", globals.fps), 5, 5)
 end

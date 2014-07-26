@@ -55,5 +55,6 @@ function Sprite:render()
 	local ox = 0
 	local oy = 0
 
+	love.graphics.setColor(255, 255, 255)
 	love.graphics.draw(self.image, px, py, r, sx, sy, ox, oy)
 end

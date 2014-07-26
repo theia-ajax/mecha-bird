@@ -2,6 +2,7 @@ Vector = require 'hump.vector'
 Class = require 'hump.class'
 require 'entity'
 require 'sprite'
+require 'physics'
 
 Bird = Class
 {
@@ -20,13 +21,35 @@ Bird = Class
 
 		self.jumpPressed = false
 
+		self.onGround = false
 		self.floor = globals.screen.height - 134
+
+		self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
+		globals.physics:register(self.collider)
 	end
 }
 
 function Bird:update(dt)
+	if globals.debug then
+		local left = love.keyboard.isDown("left")
+		local right = love.keyboard.isDown("right")
+
+		if not left and not right then
+			self.velocity.x = 0
+		end
+		if left and not right then
+			self.velocity.x = -200
+		end
+		if not left and right then
+			self.velocity.x = 200
+		end
+
+		globals.camera:move(self.velocity.x * dt, 0)
+	end
+
 	if not self.jumpPressed and love.keyboard.isDown("z") then
 		self.jumpPressed = true
+		self.onGround = false
 		self.velocity.y = -500
 	end
 
@@ -36,15 +59,30 @@ function Bird:update(dt)
 
 	self.velocity.y = self.velocity.y + self.gravity * dt
 
+	if self.onGround then
+		self.velocity.y = 0
+	end
+
 	local vel = self.velocity * dt
 	self.position = self.position + vel
 
 	if self.position.y > self.floor then
-		self.velocity.y = 0
+		self.onGround = true
 		self.position.y = self.floor
 	end
 
 	self.sprite:update()
+end
+
+function Bird:on_collision_enter(other)
+	self.position.y = other.anchor.position.y - 64
+	self.onGround = true
+end
+
+function Bird:on_collision_exit(other)
+	if not self.collider:is_colliding() then
+		self.onGround = false
+	end
 end
 
 function Bird:render()

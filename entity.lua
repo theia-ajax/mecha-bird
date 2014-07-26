@@ -10,6 +10,7 @@ Entity = Class
 		self.position = Vector.zero()
 		self.rotation = 0
 		self.scale = Vector.one()
+        self.destroy = false
 	end
 }
 
@@ -19,8 +20,24 @@ end
 function Entity:render()
 end
 
+function Entity:on_collision_enter(other)
+end
+
+function Entity:on_collision_stay(other)
+end
+
+function Entity:on_collision_exit(other)
+end
+
+function Entity:on_cleanup()
+end
+
 function add_entity(entity)
     if globals.entities == nil then return nil end
+
+    if globals.entities.lock then
+        flush_dirty_entities()
+    end
 
     if entity == nil or entity.id ~= 0 then
         return nil
@@ -43,8 +60,10 @@ function remove_entity(entity)
     local result = globals.entities[entity.id]
 
     if result ~= nil then
-        table.remove(globals.entities, result.id)
+        result.destroy = true
     end
+
+    globals.entities.lock = true
 
     return result
 end
@@ -55,8 +74,24 @@ function remove_entity_id(id)
     local result = globals.entities[id]
 
     if result ~= nil then
-        table.remove(globals.entities, id)
+        result.destroy = true
     end
 
+    globals.entities.lock = true
+
     return result
+end
+
+function flush_dirty_entities()
+    for i = #globals.entities, 1, -1 do
+        if globals.entities[i] ~= nil and globals.entities[i].destroy then
+            local e = table.remove(globals.entities, i)
+            if e ~= nil then
+                e:on_cleanup()
+            end
+            globals.currentId = globals.currentId - 1
+        end
+    end
+
+    globals.entities.lock = false
 end
