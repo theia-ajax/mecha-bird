@@ -112,10 +112,10 @@ function BoundingBox:is_colliding()
 end
 
 function BoundingBox:debug_draw()
-	local left = self:left()
-	local right = self:right()
-	local top = self:top()
-	local bottom = self:bottom()
+	local left = self:left() * game.screen.scale
+	local right = self:right() * game.screen.scale
+	local top = self:top() * game.screen.scale
+	local bottom = self:bottom() * game.screen.scale
 
 	if self:is_colliding() then
 		love.graphics.setColor(255, 0, 0)

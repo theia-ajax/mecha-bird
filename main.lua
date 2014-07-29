@@ -15,8 +15,13 @@ function love.load()
     game.version = "0.1.0"
 
     game.screen = {}
-    game.screen.width = love.graphics.getWidth()
-    game.screen.height = love.graphics.getHeight()
+    game.screen.width = 640
+    game.screen.height = 360
+
+    game.screen.windowWidth = love.graphics.getWidth()
+    game.screen.windowHeight = love.graphics.getHeight()
+
+    game.screen.scale = game.screen.windowWidth / game.screen.width;
 
     consoleFont = love.graphics.newFont("assets/fonts/VeraMono.ttf", 12)
     game.console = Console.new(consoleFont,
@@ -26,7 +31,8 @@ function love.load()
                                console_disabled)
     console_print_intro(game.name, game.version)
 
-    game.debug = true
+    game.debug = {}
+    game.debug.physics = false
     
     game.fps = 0
     game.dt = 0
@@ -78,13 +84,12 @@ function love.update(dt)
     end
 
     flush_dirty_entities()
-
-    game.world:update(dt)
     
     -- local look = game.player:get_component("CPositionable").position
     -- game.camera:lookAt(math.floor(look.x), math.floor(look.y))
-    game.camera:lookAt(game.bird.position.x + 350,
-                          300)
+    local look_x = game.bird.position.x + (game.screen.width / 2 - 50)
+    local look_y = game.screen.height / 2
+    game.camera:lookAt(look_x * game.screen.scale, look_y * game.screen.scale)
     
     game.console:update(dt)
     Timer.update(dt)
@@ -101,7 +106,7 @@ function love.draw()
         end
     end
 
-    if game.debug then
+    if game.debug.physics then
         game.physics:debug_draw()
     end
 

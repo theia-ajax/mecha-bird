@@ -17,7 +17,7 @@ Bird = Class
         self.velocity = Vector.new(200, 0)
         
         self.position.x = 32
-        self.position.y = 300
+        self.position.y = 200 * game.screen.scale
 
         self.jumpPressed = false
 
@@ -42,7 +42,7 @@ function Bird:reset()
 end
 
 function Bird:update(dt)
-    if game.debug and false then
+    if game.debug.bird then
         local left = love.keyboard.isDown("left")
         local right = love.keyboard.isDown("right")
 

@@ -43,13 +43,13 @@ function Sprite:update()
 end
 
 function Sprite:render()
-    local px = self.position.x
-    local py = self.position.y
+    local px = self.position.x * game.screen.scale
+    local py = self.position.y * game.screen.scale
 
     local r = self.rotation
 
-    local sx = self.scale.x
-    local sy = self.scale.y
+    local sx = self.scale.x * game.screen.scale
+    local sy = self.scale.y * game.screen.scale
 
     -- TODO later
     local ox = 0
