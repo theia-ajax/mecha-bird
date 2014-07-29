@@ -53,10 +53,8 @@ function Level:build(data)
 end
 
 function Level:load(filename)
-	local lines = lines_from_file(filename)
-
-	if lines == nil then
-		print("Level not found: " .. filename)
+	if not love.filesystem.isFile(filename) then
+		print("File not found: "..filename)
 		return
 	end
 
@@ -71,7 +69,8 @@ function Level:load(filename)
 	local row = 0
 	local col = 0
 
-	for i, line in ipairs(lines) do
+	for line in love.filesystem.lines(filename) do
+		print(line)
 		if string.len(line) == 0 then
 			-- nothing
 		elseif string.sub(line, 1, 1) == "#" then

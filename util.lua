@@ -1,20 +1,3 @@
-function file_exists(filename)
-	local f = io.open(filename, "r")
-	if f then f:close() end
-	return f ~= nil
-end
-
-function lines_from_file(filename)
-	if not file_exists(filename) then return nil end
-
-	local lines = {}
-	for line in io.lines(filename) do
-		lines[#lines + 1] = line
-	end
-
-	return lines
-end
-
 function split_str(str, delimeter)
 	local result = {}
 	local fpat = "(.-)" .. delimeter
