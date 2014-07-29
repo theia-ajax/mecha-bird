@@ -42,7 +42,7 @@ function Level:build(data)
 			if asset ~= nil then
 				local tile = Tile(asset)
 				local x = col * self.tileWidth
-				local y = globals.screen.height - row * self.tileHeight
+				local y = game.screen.height - row * self.tileHeight
 				tile.position.x = x
 				tile.position.y = y
 				add_entity(tile)
@@ -53,6 +53,7 @@ function Level:build(data)
 end
 
 function Level:load(filename)
+	print("Loading level: "..filename)
 	if not love.filesystem.isFile(filename) then
 		print("File not found: "..filename)
 		return
@@ -70,7 +71,6 @@ function Level:load(filename)
 	local col = 0
 
 	for line in love.filesystem.lines(filename) do
-		print(line)
 		if string.len(line) == 0 then
 			-- nothing
 		elseif string.sub(line, 1, 1) == "#" then

@@ -33,9 +33,9 @@ function Entity:on_cleanup()
 end
 
 function add_entity(entity)
-    if globals.entities == nil then return nil end
+    if game.entities == nil then return nil end
 
-    if globals.entities.lock then
+    if game.entities.lock then
         flush_dirty_entities()
     end
 
@@ -43,55 +43,55 @@ function add_entity(entity)
         return nil
     end
 
-    entity.id = globals.currentId;
-    globals.entities[entity.id] = entity
-    globals.currentId = globals.currentId + 1
+    entity.id = game.currentId;
+    game.entities[entity.id] = entity
+    game.currentId = game.currentId + 1
 
     return entity
 end
 
 function remove_entity(entity)
-    if globals.entities == nil then return nil end
+    if game.entities == nil then return nil end
 
     if entity == nil then
         return nil
     end
 
-    local result = globals.entities[entity.id]
+    local result = game.entities[entity.id]
 
     if result ~= nil then
         result.destroy = true
     end
 
-    globals.entities.lock = true
+    game.entities.lock = true
 
     return result
 end
 
 function remove_entity_id(id)
-    if globals.entities == nil then return nil end
+    if game.entities == nil then return nil end
 
-    local result = globals.entities[id]
+    local result = game.entities[id]
 
     if result ~= nil then
         result.destroy = true
     end
 
-    globals.entities.lock = true
+    game.entities.lock = true
 
     return result
 end
 
 function flush_dirty_entities()
-    for i = #globals.entities, 1, -1 do
-        if globals.entities[i] ~= nil and globals.entities[i].destroy then
-            local e = table.remove(globals.entities, i)
+    for i = #game.entities, 1, -1 do
+        if game.entities[i] ~= nil and game.entities[i].destroy then
+            local e = table.remove(game.entities, i)
             if e ~= nil then
                 e:on_cleanup()
             end
-            globals.currentId = globals.currentId - 1
+            game.currentId = game.currentId - 1
         end
     end
 
-    globals.entities.lock = false
+    game.entities.lock = false
 end

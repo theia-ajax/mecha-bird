@@ -1,6 +1,7 @@
 Vector = require 'hump.vector'
 Timer = require 'hump.timer'
 Camera = require 'hump.camera'
+Console = require 'console.console'
 require 'bird'
 require 'tile'
 require 'level'
@@ -8,92 +9,106 @@ require 'util'
 require 'physics'
 
 function love.load()
-	globals = {}
+	game = {}
 
-	globals.screen = {}
-	globals.screen.width = love.graphics.getWidth()
-	globals.screen.height = love.graphics.getHeight()
+	game.name = "MechaBird"
+	game.version = "0.1.0"
 
-	globals.debug = true
+	game.screen = {}
+	game.screen.width = love.graphics.getWidth()
+	game.screen.height = love.graphics.getHeight()
+
+	consoleFont = love.graphics.newFont("assets/fonts/VeraMono.ttf", 12)
+	game.console = Console.new(consoleFont,
+								  game.screen.width,
+								  200,
+								  4,
+								  console_disabled)
+	console_print_intro(game.name, game.version)
+
+	game.debug = true
 	
-	globals.fps = 0
-	globals.dt = 0
+	game.fps = 0
+	game.dt = 0
 
-	globals.currentId = 1
+	game.currentId = 1
 
-	globals.camera = Camera(400, 300)
+	game.camera = Camera(400, 300)
 
-	globals.physics = Physics()
+	game.physics = Physics()
 
-	pxToMeter = 128
-	love.physics.setMeter(pxToMeter)
-	globals.world = love.physics.newWorld(0, 9.8 * pxToMeter, true)
-
-	globals.entities = {}
-	globals.entities.lock = false
+	game.entities = {}
+	game.entities.lock = false
 
 	local bird = Bird(1)
 	add_entity(bird)
-	globals.bird = bird
+	game.bird = bird
 
-	globals.levelName = "assets/levels/testlevel.csv"
-    globals.level = Level()
-    globals.level:load(globals.levelName)
+	game.levelName = "assets/levels/testlevel.csv"
+    game.level = Level()
+    game.level:load(game.levelName)
 	
-	Timer.addPeriodic(0.05, function() globals.fps = 1 / globals.dt end)
+	Timer.addPeriodic(0.05, function() game.fps = 1 / game.dt end)
 end
 
 function love.keypressed(key, unicode)
 	if key == "escape" then
-		love.event.push('quit')
+		love.event.quit()
 	end
 
 	if key == "r" then
-		globals.level:cleanup()
-		globals.level:load(globals.levelName)
+		game.level:cleanup()
+		game.level:load(game.levelName)
 	end
 
 	if key == "b" then
-		globals.bird:reset()
+		game.bird:reset()
+	end
+
+	if key == '`' then
+		game.console:focus()
 	end
 end
 
 function love.update(dt)
-	globals.dt = dt
+	game.dt = dt
 
-	for i, v in ipairs(globals.entities) do
+	for i, v in ipairs(game.entities) do
 		v:update(dt)
 	end
 
 	flush_dirty_entities()
 
-	globals.world:update(dt)
+	game.world:update(dt)
 	
-	-- local look = globals.player:get_component("CPositionable").position
-	-- globals.camera:lookAt(math.floor(look.x), math.floor(look.y))
-	globals.camera:lookAt(globals.bird.position.x + 350,
+	-- local look = game.player:get_component("CPositionable").position
+	-- game.camera:lookAt(math.floor(look.x), math.floor(look.y))
+	game.camera:lookAt(game.bird.position.x + 350,
 						  300)
 	
+	game.console:update(dt)
 	Timer.update(dt)
 
-	globals.physics:update_collisions()
+	game.physics:update_collisions()
 end
 
 function love.draw()
-	globals.camera:attach()
+	game.camera:attach()
 
-	for i, v in ipairs(globals.entities) do
+	for i, v in ipairs(game.entities) do
 		if v ~= nil then
 			v:render()
 		end
 	end
 
-	if globals.debug then
-		globals.physics:debug_draw()
+	if game.debug then
+		game.physics:debug_draw()
 	end
 
-	globals.camera:detach()
+	game.camera:detach()
 
 	love.graphics.setColor(255, 255, 255)
-	love.graphics.print("FPS : "..string.format("%.0f", globals.fps), 5, 5)
+	love.graphics.print("FPS : "..string.format("%.0f", game.fps), 5, 5)
+
+	game.console:draw()
 end

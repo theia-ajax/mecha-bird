@@ -22,10 +22,10 @@ Bird = Class
 		self.jumpPressed = false
 
 		self.onGround = false
-		self.killY = globals.screen.height + 128
+		self.killY = game.screen.height + 128
 
 		self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
-		globals.physics:register(self.collider)
+		game.physics:register(self.collider)
 	end
 }
 
@@ -42,7 +42,7 @@ function Bird:reset()
 end
 
 function Bird:update(dt)
-	if globals.debug and false then
+	if game.debug and false then
 		local left = love.keyboard.isDown("left")
 		local right = love.keyboard.isDown("right")
 
@@ -56,7 +56,7 @@ function Bird:update(dt)
 			self.velocity.x = 200
 		end
 
-		globals.camera:move(self.velocity.x * dt, 0)
+		game.camera:move(self.velocity.x * dt, 0)
 	end
 
 	if not self.jumpPressed and love.keyboard.isDown("z") then

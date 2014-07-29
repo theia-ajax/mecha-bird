@@ -1,3 +1,5 @@
+Timer = require 'hump.timer'
+
 function split_str(str, delimeter)
 	local result = {}
 	local fpat = "(.-)" .. delimeter
@@ -16,3 +18,16 @@ function split_str(str, delimeter)
 	end
 	return result
 end
+
+function console_print_intro(name, version)
+	print(" "..name.." v"..version.." ".._VERSION)
+	print()
+	print(" <Escape> or ~ leaves the console. Call quit() or exit() to quit.")
+	print(" Try hitting <Tab> to complete your current input.")
+	print(" Type help() for commands and usage")
+	print()
+end
+
+quit = love.event.quit
+exit = quit
+print = function(...) game.console:print(...) end
