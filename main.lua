@@ -34,6 +34,7 @@ function love.load()
 
 	local bird = Bird(1)
 	add_entity(bird)
+	globals.bird = bird
 
 	globals.levelName = "assets/levels/testlevel.csv"
     globals.level = Level()
@@ -51,6 +52,10 @@ function love.keypressed(key, unicode)
 		globals.level:cleanup()
 		globals.level:load(globals.levelName)
 	end
+
+	if key == "b" then
+		globals.bird:reset()
+	end
 end
 
 function love.update(dt)
@@ -66,6 +71,8 @@ function love.update(dt)
 	
 	-- local look = globals.player:get_component("CPositionable").position
 	-- globals.camera:lookAt(math.floor(look.x), math.floor(look.y))
+	globals.camera:lookAt(globals.bird.position.x + 350,
+						  300)
 	
 	Timer.update(dt)
 
