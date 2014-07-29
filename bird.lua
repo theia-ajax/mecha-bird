@@ -13,15 +13,8 @@ Bird = Class
 
         self.sprite = Sprite("assets/bird.png", self)
 
-        self.gravity = 1000
-        self.velocity = Vector.new(200, 0)
-        
-        self.position.x = 32
-        self.position.y = 200 * game.screen.scale
+        self:reset()
 
-        self.jumpPressed = false
-
-        self.onGround = false
         self.killY = game.screen.height + 128
 
         self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
@@ -33,8 +26,8 @@ function Bird:reset()
     self.gravity = 1000
     self.velocity = Vector.new(200, 0)
     
-    self.position.x = 32
-    self.position.y = 300
+    self.position.x = 50 * game.screen.scale
+    self.position.y = 200 * game.screen.scale
 
     self.jumpPressed = false
 
