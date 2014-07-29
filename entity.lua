@@ -3,15 +3,15 @@ Vector = require 'hump.vector'
 
 Entity = Class
 {
-	name = "Entity",
-	inherits = {},
-	function(self)
-		self.id = 0
-		self.position = Vector.zero()
-		self.rotation = 0
-		self.scale = Vector.one()
+    name = "Entity",
+    inherits = {},
+    function(self)
+        self.id = 0
+        self.position = Vector.zero()
+        self.rotation = 0
+        self.scale = Vector.one()
         self.destroy = false
-	end
+    end
 }
 
 function Entity:update(dt)
