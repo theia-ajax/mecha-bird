@@ -31,3 +31,12 @@ end
 quit = love.event.quit
 exit = quit
 print = function(...) game.console:print(...) end
+
+function set_screen_scale(scale)
+    game.screen.windowWidth = game.screen.width * scale
+    game.screen.windowHeight = game.screen.height * scale
+
+    game.screen.scale = scale
+
+    love.window.setMode(game.screen.windowWidth, game.screen.windowHeight)
+end

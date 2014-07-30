@@ -80,11 +80,12 @@ function Bird:update(dt)
 end    
 
 function Bird:on_collision_enter(other)
-    if self.position.y > other.anchor.position.y - other.anchor.sprite.height / 2 + 8 then
+    if self.position.y > other.anchor.position.y - other.anchor.sprite.height / 2 + (8 * game.screen.scale) then
         self:reset()
     else
         self.position.y = other.anchor.position.y - 32
         self.onGround = true
+        self.sprite:update()
     end
 end
 

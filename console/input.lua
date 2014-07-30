@@ -168,6 +168,10 @@ function input:keypressed(key)
         self:unfocus()
         return
     end
+    if key=="v" and love.keyboard.isDown("lctrl","rctrl") then
+        table.insert(self.line, self.cursor, love.system.getClipboardText())
+        self.cursor = self.cursor + 1
+    end
     if self.hooks[key] then
         self.hooks[key](self)
     end
