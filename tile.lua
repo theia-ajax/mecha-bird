@@ -13,8 +13,8 @@ Tile = Class
 
         self.sprite = Sprite(filename, self)
 
-        self.width = self.sprite.width
-        self.height = self.sprite.height
+        self.width = self.sprite.width / 2
+        self.height = self.sprite.height / 2
 
         self.wrap = false
 

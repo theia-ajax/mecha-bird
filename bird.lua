@@ -13,21 +13,22 @@ Bird = Class
 
         self.sprite = Sprite("assets/bird.png", self)
 
+        self.gravity = 1000
+
         self:reset()
 
         self.killY = game.screen.height + 128
 
-        self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
+        self.collider = BoundingBox(self, 32, 32, Vector(16, 16))
         game.physics:register(self.collider)
     end
 }
 
 function Bird:reset()
-    self.gravity = 1000
     self.velocity = Vector.new(200, 0)
     
     self.position.x = 50 * game.screen.scale
-    self.position.y = 200 * game.screen.scale
+    self.position.y = 0 * game.screen.scale
 
     self.jumpPressed = false
 
@@ -82,7 +83,7 @@ function Bird:on_collision_enter(other)
     if self.position.y > other.anchor.position.y - other.anchor.sprite.height / 2 + 8 then
         self:reset()
     else
-        self.position.y = other.anchor.position.y - 64
+        self.position.y = other.anchor.position.y - 32
         self.onGround = true
     end
 end
