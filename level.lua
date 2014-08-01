@@ -39,8 +39,10 @@ function Level:build(data)
 
         if v > 0 then
             local asset = data.assets[v]
+            local file = asset.file
+            local tag = asset.tag
             if asset ~= nil then
-                local tile = Tile(asset)
+                local tile = Tile(file, tag)
                 local x = col * self.tileWidth
                 local y = game.screen.height - row * self.tileHeight
                 tile.position.x = x
@@ -93,7 +95,7 @@ function Level:load(filename)
             data[var] = value
         elseif string.sub(line, 1, 1) == ">" then
             local s = split_str(string.sub(line, 2), ",")
-            table.insert(data.assets, s[1])
+            table.insert(data.assets, { file = s[1], tag = s[2] })
         else
             row = row + 1
             for k, v in pairs(split_str(line, ",")) do

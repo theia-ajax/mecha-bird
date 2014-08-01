@@ -8,7 +8,7 @@ Tile = Class
 {
     name = "tile",
     inherits = { Entity },
-    function(self, filename)
+    function(self, filename, tag)
         Entity.construct(self)
 
         self.sprite = Sprite(filename, self)
@@ -21,6 +21,8 @@ Tile = Class
         self.collider = BoundingBox(self, self.width, self.height, Vector(self.width / 2, self.height / 2))
         self.collider.static = true
         game.physics:register(self.collider)
+
+        self.tag = tag or "tile"
     end
 }
 

@@ -21,6 +21,8 @@ Bird = Class
 
         self.collider = BoundingBox(self, 32, 32, Vector(16, 16))
         game.physics:register(self.collider)
+
+        self.tag = "bird"
     end
 }
 
@@ -80,12 +82,16 @@ function Bird:update(dt)
 end    
 
 function Bird:on_collision_enter(other)
-    if self.position.y > other.anchor.position.y - other.anchor.sprite.height / 2 + (8 * game.screen.scale) then
+    if other.anchor.tag == "ground" then
+        if self.position.y > other.anchor.position.y - other.anchor.sprite.height / 2 + (8 * game.screen.scale) then
+            self:reset()
+        else
+            self.position.y = other.anchor.position.y - 32
+            self.onGround = true
+            self.sprite:update()
+        end
+    elseif other.anchor.tag == "lava" then
         self:reset()
-    else
-        self.position.y = other.anchor.position.y - 32
-        self.onGround = true
-        self.sprite:update()
     end
 end
 
