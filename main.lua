@@ -7,6 +7,7 @@ require 'tile'
 require 'level'
 require 'util'
 require 'physics'
+require 'input'
 
 function love.load()
     game = {}
@@ -28,7 +29,7 @@ function love.load()
                                game.screen.width,
                                200,
                                4,
-                               console_disabled)
+                               function() game.input:enable() end)
     console_print_intro(game.name, game.version)
 
     game.debug = {}
@@ -55,6 +56,8 @@ function love.load()
     game.level:load(game.levelName)
     
     Timer.addPeriodic(0.05, function() game.fps = 1 / game.dt end)
+
+    game.input = Input()
 end
 
 function love.keypressed(key, unicode)
@@ -73,7 +76,14 @@ function love.keypressed(key, unicode)
 
     if key == '`' then
         game.console:focus()
+        game.input:disable()
     end
+
+    game.input:key_pressed(key)
+end
+
+function love.keyreleased(key)
+    game.input:key_released(key)
 end
 
 function love.update(dt)
@@ -95,6 +105,8 @@ function love.update(dt)
     Timer.update(dt)
 
     game.physics:update_collisions()
+
+    game.input:update()
 end
 
 function love.draw()

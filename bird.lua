@@ -32,8 +32,6 @@ function Bird:reset()
     self.position.x = 50 * game.screen.scale
     self.position.y = 0 * game.screen.scale
 
-    self.jumpPressed = false
-
     self.onGround = false
 end
 
@@ -55,14 +53,9 @@ function Bird:update(dt)
         game.camera:move(self.velocity.x * dt, 0)
     end
 
-    if not self.jumpPressed and love.keyboard.isDown("z") then
-        self.jumpPressed = true
+    if game.input:key_down("z") then
         self.onGround = false
         self.velocity.y = -500
-    end
-
-    if not love.keyboard.isDown("z") then
-        self.jumpPressed = false
     end
 
     self.velocity.y = self.velocity.y + self.gravity * dt

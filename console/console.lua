@@ -1,7 +1,7 @@
 local print = print
 module(..., package.seeall)
-local IN  = require 'console.input'
-local OUT = require 'console.output'
+local IN  = require 'console.console-input'
+local OUT = require 'console.console-output'
 
 local console = {}
 console.__index = console
