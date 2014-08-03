@@ -302,6 +302,8 @@ function Physics:update_collisions()
     --     end
     -- end
 
+    game.collChecks = 0
+
     for _, cell in ipairs(self.cells) do
         local len = #cell
         for i = 1, len - 1 do
@@ -310,6 +312,7 @@ function Physics:update_collisions()
                 local c2 = cell[j]
 
                 if c1.enabled and c2.enabled and not (c1.static and c2.static) then
+                    game.collChecks = game.collChecks + 1
                     local intersects = c1:intersects(c2)
                     if c1.activeCollisions[c2.id] then
                         if intersects then

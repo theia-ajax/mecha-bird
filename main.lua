@@ -41,13 +41,15 @@ function love.load()
     game.debug.bird = false
     
     game.fps = 0
+    game.frames = 0
+    game.collChecks = 0
     game.dt = 0
 
     game.currentId = 1
 
     game.camera = Camera(400, 300)
 
-    game.physics = Physics(10000, 500, 500, 250)
+    game.physics = Physics(10000, 500, 250, 250)
 
     game.entities = {}
     game.entities.lock = false
@@ -68,7 +70,10 @@ function love.load()
         game.camera:lookAt(look_x * game.screen.scale, look_y * game.screen.scale)
     end
 
-    Timer.addPeriodic(0.05, function() game.fps = 1 / game.dt end)
+    Timer.addPeriodic(1, function()
+        game.fps = game.frames
+        game.frames = 0
+    end)
 
     game.physics:update_colliders(true)
 
@@ -144,9 +149,12 @@ function love.draw()
     game.camera:detach()
 
     love.graphics.setColor(0, 0, 0, 127)
-    love.graphics.rectangle("fill", 2, 2, 70, 20)
+    love.graphics.rectangle("fill", 2, 2, 150, 40)
     love.graphics.setColor(255, 255, 255)
     love.graphics.print("FPS : "..string.format("%.0f", game.fps), 5, 5)
+    love.graphics.print("Collision Checks: "..string.format("%.0f", game.collChecks), 5, 25)
 
     game.console:draw()
+
+    game.frames = game.frames + 1
 end
