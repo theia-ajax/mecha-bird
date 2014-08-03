@@ -38,6 +38,7 @@ function love.load()
 
     game.debug = {}
     game.debug.physics = false
+    game.debug.bird = false
     
     game.fps = 0
     game.dt = 0
@@ -46,7 +47,7 @@ function love.load()
 
     game.camera = Camera(400, 300)
 
-    game.physics = Physics()
+    game.physics = Physics(10000, 500, 500, 250)
 
     game.entities = {}
     game.entities.lock = false
@@ -59,9 +60,17 @@ function love.load()
     add_entity(bird)
     game.bird = bird
     
-    game.reset = function() bird:reset(); game.level:reset() end
+    game.reset = function()
+        bird:reset()
+        game.level:reset()
+        local look_x = game.bird.position.x + (game.screen.width / 2 - 50)
+        local look_y = game.screen.height / 2
+        game.camera:lookAt(look_x * game.screen.scale, look_y * game.screen.scale)
+    end
 
     Timer.addPeriodic(0.05, function() game.fps = 1 / game.dt end)
+
+    game.physics:update_colliders(true)
 
     game.input = Input()
 end

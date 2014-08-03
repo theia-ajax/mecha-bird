@@ -44,18 +44,16 @@ function Bird:update(dt)
     if game.debug.bird then
         local left = love.keyboard.isDown("left")
         local right = love.keyboard.isDown("right")
+        local up = love.keyboard.isDown("up")
+        local down = love.keyboard.isDown("down")
 
-        if not left and not right then
-            self.velocity.x = 0
-        end
-        if left and not right then
-            self.velocity.x = -200
-        end
-        if not left and right then
-            self.velocity.x = 200
-        end
+        self.velocity.x = 0
+        self.velocity.y = 0
 
-        game.camera:move(self.velocity.x * dt, 0)
+        if left then self.velocity.x = self.velocity.x - 200 end
+        if right then self.velocity.x = self.velocity.x + 200 end
+        if up then self.velocity.y = self.velocity.y - 200 end
+        if down then self.velocity.y = self.velocity.y + 200 end
     end
 
     if game.input:key_down("z") and self.jumpCount < self.maxJumps then
@@ -64,7 +62,9 @@ function Bird:update(dt)
         self.jumpCount = self.jumpCount + 1
     end
 
-    self.velocity.y = self.velocity.y + self.gravity * dt
+    local gravity = self.gravity
+    if game.debug.bird then gravity = 0 end
+    self.velocity.y = self.velocity.y + gravity * dt
 
     if self.onGround then
         self.velocity.y = 0

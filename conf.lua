@@ -6,7 +6,7 @@ function love.conf(t)
     t.console = false
 
     t.window.title = "Mecha Bird"
-    t.window.icon = nil
+    t.window.icon = "assets/bird.png"
     t.window.width = 1280
     t.window.height = 720
     t.window.borderless = false

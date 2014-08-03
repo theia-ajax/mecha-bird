@@ -186,6 +186,10 @@ function Level:reset()
 end
 
 function Level:render()
+    if game.debug.nobg then
+        return
+    end
+    
 	for _, bg in ipairs(self.bgSprites) do
 		bg:render()
 	end
