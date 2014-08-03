@@ -40,3 +40,8 @@ function set_screen_scale(scale)
 
     love.window.setMode(game.screen.windowWidth, game.screen.windowHeight)
 end
+
+function restart()
+    os.execute("love .")
+    quit()
+end

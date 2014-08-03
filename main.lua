@@ -26,10 +26,14 @@ function love.load()
 
     consoleFont = love.graphics.newFont("assets/fonts/VeraMono.ttf", 12)
     game.console = Console.new(consoleFont,
-                               game.screen.width,
+                               game.screen.windowWidth,
                                200,
                                4,
                                function() game.input:enable() end)
+    game.console.commands = { 
+        quit = quit,
+        exit = exit,
+    }
     console_print_intro(game.name, game.version)
 
     game.debug = {}
@@ -47,14 +51,16 @@ function love.load()
     game.entities = {}
     game.entities.lock = false
 
-    local bird = Bird(1)
-    add_entity(bird)
-    game.bird = bird
-
     game.levelName = "assets/levels/testlevel.csv"
     game.level = Level()
     game.level:load(game.levelName)
+
+    local bird = Bird(1)
+    add_entity(bird)
+    game.bird = bird
     
+    game.reset = function() bird:reset(); game.level:reset() end
+
     Timer.addPeriodic(0.05, function() game.fps = 1 / game.dt end)
 
     game.input = Input()
@@ -93,6 +99,8 @@ function love.update(dt)
         v:update(dt)
     end
 
+    game.level:update(dt)
+
     flush_dirty_entities()
     
     -- local look = game.player:get_component("CPositionable").position
@@ -112,6 +120,8 @@ end
 function love.draw()
     game.camera:attach()
 
+    game.level:render()
+
     for i, v in ipairs(game.entities) do
         if v ~= nil then
             v:render()
@@ -124,6 +134,8 @@ function love.draw()
 
     game.camera:detach()
 
+    love.graphics.setColor(0, 0, 0, 127)
+    love.graphics.rectangle("fill", 2, 2, 70, 20)
     love.graphics.setColor(255, 255, 255)
     love.graphics.print("FPS : "..string.format("%.0f", game.fps), 5, 5)
 

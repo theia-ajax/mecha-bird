@@ -9,10 +9,12 @@ Level = Class {
     function(self)
         self.levelData = {}
         self.tiles = {}
+        self.bgSprites = {}
         self.width = 0
         self.height = 0
         self.tileWidth = 0
         self.tileHeight = 0
+        self.background = nil
     end
 }
 
@@ -52,6 +54,18 @@ function Level:build(data)
             end
         end
     end
+
+    if data.assets.background ~= nil then
+    	self.background = data.assets.background
+        local maxBgs = 2
+    	for i = 1, maxBgs do
+    		local bgSprite = Sprite(data.assets.background)
+    		bgSprite.position.x = bgSprite.width * (i - 1)
+            table.insert(self.bgSprites, bgSprite)
+    	end
+
+        self.bgRight = self.bgSprites[2]
+    end
 end
 
 function Level:load(filename)
@@ -73,9 +87,10 @@ function Level:load(filename)
     local col = 0
 
     for line in love.filesystem.lines(filename) do
+    	local first = string.sub(line, 1, 1)
         if string.len(line) == 0 then
             -- nothing
-        elseif string.sub(line, 1, 1) == "#" then
+        elseif first == "#" then
             local var = ""
             local eqIndex = 0
             local len = string.len(line)
@@ -93,9 +108,12 @@ function Level:load(filename)
             local value = tonumber(s[1])
 
             data[var] = value
-        elseif string.sub(line, 1, 1) == ">" then
+        elseif first == ">" then
             local s = split_str(string.sub(line, 2), ",")
             table.insert(data.assets, { file = s[1], tag = s[2] })
+        elseif first == "^" then
+        	local s = split_str(string.sub(line, 2), ",")
+        	data.assets.background = s[1]
         else
             row = row + 1
             for k, v in pairs(split_str(line, ",")) do
@@ -126,4 +144,49 @@ function Level:cleanup()
     self.height = 0
     self.tileWidth = 0
     self.tileHeight = 0
+end
+
+-- The ground height at horizontal position x
+function Level:ground_height(x)
+    if x < 0 or x > self.width * self.tileWidth then
+        return game.screen.height
+    end
+
+    local col = math.floor(x / self.tileWidth)
+
+    for row = 1, self.height do
+        local r = row - 1
+        local i = r * self.width + col + 1
+        local t = self.levelData[i]
+        if t > 0 then
+            return game.screen.height - (self.height - r) * self.tileHeight
+        end
+    end
+
+    return game.screen.height
+end
+
+function Level:update(dt)
+    local left = game.camera.x - game.screen.windowWidth / 2
+    for i, bg in ipairs(self.bgSprites) do
+        local threshold = left - bg.width * game.screen.scale
+        threshold = threshold / game.screen.scale
+        if bg.position.x < threshold then
+            bg.position.x = self.bgRight.position.x + self.bgRight.width
+            self.bgRight = bg
+        end
+    end
+end
+
+function Level:reset()
+    for i, bg in ipairs(self.bgSprites) do
+        bg.position.x = bg.width * (i - 1)
+        self.bgRight = bg
+    end
+end
+
+function Level:render()
+	for _, bg in ipairs(self.bgSprites) do
+		bg:render()
+	end
 end

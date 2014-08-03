@@ -34,6 +34,8 @@ function new(font, width, height, spacing, unfocus_cb)
     self.height = height
     self.enabled = false
 
+    self.commands = {}
+
     self.unfocus_callback = unfocus_cb or nil
     return self
 end
@@ -55,6 +57,16 @@ function console:onCommand(cmd)
     self._out:push(self._prompt, cmd)
     cmd = cmd:gsub("^=%s?", "return "):gsub("^return%s+(.*)(%s*)$", "print(%1)%2")
     self.chunk = self.chunk and table.concat({self.chunk, cmd}, " ") or cmd
+    
+    self:print(self.chunk)
+    if self.commands[self.chunk] ~= nil then
+        local cmdFunc = self.commands[self.chunk]
+        self:print(type(cmdFunc))
+        if type(cmdFunc) == "function" then
+            cmdFunc()
+        end
+    end
+
     local ok, out = pcall(function() assert(loadstring(self.chunk))() end)
     if not ok and out:match("'<eof>'") then
         self._prompt = self.prompt2
