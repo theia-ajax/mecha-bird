@@ -2,6 +2,7 @@ local print = print
 module(..., package.seeall)
 local IN  = require 'console.console-input'
 local OUT = require 'console.console-output'
+require 'util'
 
 local console = {}
 console.__index = console
@@ -61,7 +62,6 @@ function console:onCommand(cmd)
     self:print(self.chunk)
     if self.commands[self.chunk] ~= nil then
         local cmdFunc = self.commands[self.chunk]
-        self:print(type(cmdFunc))
         if type(cmdFunc) == "function" then
             cmdFunc()
         end
@@ -69,6 +69,28 @@ function console:onCommand(cmd)
 
     local ok, out = pcall(function() assert(loadstring(self.chunk))() end)
     if not ok and out:match("'<eof>'") then
+        local tokens = split_str(cmd, ".")
+        if tokens ~= nil then
+            local table = _G
+            for i, t in ipairs(tokens) do
+                if table[t] ~= nil then
+                    table = table[t]
+                else
+                    break
+                end
+            end
+
+            if type(table) ~= "table" then
+                self:print(table)
+
+                self._prompt = self.prompt1
+                self._in.history[#self._in.history] = self.chunk
+                self.chunk = nil
+
+                return
+            end
+        end
+
         self._prompt = self.prompt2
         self._in.history[#self._in.history] = nil
     else
