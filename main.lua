@@ -8,6 +8,7 @@ require 'level'
 require 'util'
 require 'physics'
 require 'input'
+require 'hud'
 
 function love.load()
     game = {}
@@ -61,6 +62,8 @@ function love.load()
     local bird = Bird(1)
     add_entity(bird)
     game.bird = bird
+
+    game.hud = Hud(bird)
     
     game.reset = function()
         bird:reset()
@@ -147,6 +150,8 @@ function love.draw()
     end
 
     game.camera:detach()
+
+    game.hud:render()
 
     love.graphics.setColor(0, 0, 0, 127)
     love.graphics.rectangle("fill", 2, 2, 150, 40)

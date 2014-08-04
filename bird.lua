@@ -14,8 +14,13 @@ Bird = Class
         self.sprite = Sprite("assets/bird.png", self)
 
         self.gravity = 1000
-        self.maxJumps = 10000
+        self.glideFall = 50
+        self.maxJumps = 1
 
+        self.maxGlidePower = 100
+        self.glideRecoverRate = 20
+        self.glideDecayRate = 40
+        
         self:reset()
 
         self.killY = game.screen.height + 128
@@ -36,6 +41,9 @@ function Bird:reset()
     self.onGround = false
 
     self.jumpCount = 0
+
+    self.fallMode = "free"
+    self.glidePower = self.maxGlidePower
 
     self.sprite:update()
 end
@@ -62,9 +70,36 @@ function Bird:update(dt)
         self.jumpCount = self.jumpCount + 1
     end
 
+    if game.input:key("x") then
+        if self.glidePower > 0 then
+            self.fallMode = "glide"
+        else
+            self.fallMode = "free"
+        end
+    else
+        self.fallMode = "free"
+        self.glidePower = self.glidePower + self.glideRecoverRate * dt
+        if self.glidePower > self.maxGlidePower then
+            self.glidePower = self.maxGlidePower
+        end
+    end
+
     local gravity = self.gravity
     if game.debug.bird then gravity = 0 end
     self.velocity.y = self.velocity.y + gravity * dt
+    
+    if self.fallMode == "glide" then
+        if self.velocity.y > self.glideFall then
+            self.velocity.y = self.glideFall
+            self.glidePower = self.glidePower - self.glideDecayRate * dt
+            if self.glidePower < 0 then self.glidePower = 0 end
+        else
+            self.glidePower = self.glidePower + self.glideRecoverRate * dt
+            if self.glidePower > self.maxGlidePower then
+                self.glidePower = self.maxGlidePower
+            end
+        end
+    end
 
     if self.onGround then
         self.velocity.y = 0

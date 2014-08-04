@@ -141,12 +141,12 @@ function BoundingBox:debug_draw()
         love.graphics.setColor(0, 255, 0)
     end
 
-    love.graphics.line(left, top,
-                       right, top,
-                       right, bottom,
-                       left, bottom,
-                       left, top)
-
+    love.graphics.rectangle("line",
+                            left,
+                            top,
+                            self.width * game.screen.scale,
+                            self.height * game.screen.scale)
+    
     love.graphics.setColor(0, 0, 0, 127)
     love.graphics.rectangle("fill", left, top, self.width * 2, self.height * 2)
     love.graphics.setColor(0, 255, 0)
@@ -181,12 +181,12 @@ Physics = Class {
             local col = (i - 1) % self.cellCols
 
             local r = self.cellRows - row
-            self.cells[i].bounds = Rect(
-                col * self.cellWidth,
-                game.screen.height - r * self.cellHeight,
-                self.cellWidth,
-                self.cellHeight
-            )
+            self.cells[i].bounds = {
+                x = col * self.cellWidth,
+                y = game.screen.height - r * self.cellHeight,
+                w = self.cellWidth,
+                h = self.cellHeight,
+            }
         end
     end
 }
@@ -198,7 +198,40 @@ function Physics:register(collider)
     self:calc_cells(collider)
 end
 
+function Physics:cells_updated(collider)
+    local collCells = self:determine_cells(collider)
+
+    local ct1 = {}
+    local ct2 = {}
+
+    for _, ci in pairs(collCells) do
+        ct1[ci] = true
+    end
+
+    for _, ci in pairs(collider.inCells) do
+        ct2[ci] = true
+    end
+
+    for ci, _ in pairs(ct1) do
+        if not ct2[ci] then
+            return true
+        end
+    end
+
+    for ci, _ in pairs(ct2) do
+        if not ct1[ci] then
+            return true
+        end
+    end
+
+    return false
+end
+
 function Physics:calc_cells(collider)
+    if not self:cells_updated(collider) then
+        return
+    end
+
     for _, c in ipairs(collider.inCells) do
         local index = 0
         for i, v in ipairs(self.cells[c]) do
@@ -208,6 +241,14 @@ function Physics:calc_cells(collider)
             end
         end
         if index > 0 then
+            for i, coll in ipairs(self.cells[c]) do
+                if i ~= index then
+                    if coll.activeCollisions[collider.id] then
+                        coll:on_exit(collider)
+                        collider:on_exit(coll)
+                    end
+                end
+            end
             table.remove(self.cells[c], index)
         end
     end
@@ -357,44 +398,4 @@ function Physics:debug_draw()
                                 cell.bounds.w * game.screen.scale,
                                 cell.bounds.h * game.screen.scale)
     end
-end
-
-Rect = Class {
-    name = "Rect",
-    function(self, x, y, w, h)
-        self.x = x or 0
-        self.y = y or 0
-        self.w = w or 0
-        self.h = h or 0
-    end
-}
-
-function Rect:left()
-    return self.x
-end
-
-function Rect:right()
-    return self.x + self.w
-end
-
-function Rect:top()
-    return self.y
-end
-
-function Rect:bottom()
-    return self.y + self.h
-end
-
-function Rect:contains(vec)
-    return vec.x >= self:left() and
-           vec.x <= self:right() and
-           vec.y >= self:top() and
-           vec.y <= self:bottom()
-end
-
-function Rect:intersects(rect)
-    return self:left() <= rect:right() and
-           self:right() >= rect:left() and
-           self:top() <= rect:bottom() and
-           self:bottom() >= rect:top()
 end
