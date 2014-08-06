@@ -70,7 +70,7 @@ function Bird:update(dt)
         self.jumpCount = self.jumpCount + 1
     end
 
-    if game.input:key("x") then
+    if game.input:key("z") then
         if self.glidePower > 0 then
             self.fallMode = "glide"
         else

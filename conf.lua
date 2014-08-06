@@ -7,8 +7,8 @@ function love.conf(t)
 
     t.window.title = "Mecha Bird"
     t.window.icon = "assets/bird.png"
-    t.window.width = 1280
-    t.window.height = 720
+    t.window.width = 640
+    t.window.height = 360
     t.window.borderless = false
     t.window.resizable = false
     t.window.minwidth = 1
@@ -17,7 +17,7 @@ function love.conf(t)
     t.window.fullscreentype = "normal"
     t.window.vsync = false
     t.window.fsaa = 0
-    t.window.display = 1
+    t.window.display = 2
     t.window.highdpi = false
     t.window.srgb = false
 
