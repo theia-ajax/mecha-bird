@@ -64,13 +64,13 @@ function Bird:update(dt)
         if down then self.velocity.y = self.velocity.y + 200 end
     end
 
-    if game.input:key_down("z") and self.jumpCount < self.maxJumps then
+    if game.input:button_down("jump") and self.jumpCount < self.maxJumps then
         self.onGround = false
         self.velocity.y = -500
         self.jumpCount = self.jumpCount + 1
     end
 
-    if game.input:key("z") then
+    if game.input:button("jump") then
         if self.glidePower > 0 then
             self.fallMode = "glide"
         else

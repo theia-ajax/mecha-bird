@@ -83,7 +83,7 @@ function Game:initialize()
     self.physics:update_colliders(true)
 
     self.input = Input()
-    self.input:add_button("test", "a", "b", "c")
+    self.input:add_button("jump", "z", "lctrl", "lgui", " ")
 end
 
 function Game:update(dt)
@@ -137,25 +137,6 @@ function Game:render()
     love.graphics.print("Collision Checks: "..string.format("%.0f", self.collChecks), 5, 25)
 
     self.console:draw()
-
-    r = 0
-    g = 0
-    b = 0
-
-    if self.input:button("test") then
-        b = 255
-    end
-
-    if self.input:button_down("test") then
-        r = 255
-    end
-
-    if self.input:button_up("test") then
-        g = 255
-    end
-
-    love.graphics.setColor(r, g, b)
-    love.graphics.rectangle("fill", 200, 0, 100, 100)
 
     self.frames = self.frames + 1
 end

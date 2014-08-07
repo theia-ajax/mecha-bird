@@ -101,5 +101,5 @@ function Input:button_up(button)
         end
     end
 
-    return justUpCount > 0 and justUpCount == upCount
+    return justUpCount > 0 and upCount == #self.buttons[button]
 end
