@@ -30,6 +30,9 @@ end
 function Entity:on_collision_exit(other)
 end
 
+function Entity:on_create()
+end
+
 function Entity:on_cleanup()
 end
 
@@ -47,6 +50,8 @@ function add_entity(entity)
     entity.id = game.currentId;
     game.entities[entity.id] = entity
     game.currentId = game.currentId + 1
+
+    entity:on_create()
 
     return entity
 end

@@ -53,5 +53,4 @@ end
 
 function love.draw()
     game:render()
-    
 end

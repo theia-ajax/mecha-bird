@@ -20,11 +20,15 @@ Tile = Class
 
         self.collider = BoundingBox(self, self.width, self.height, Vector(self.width / 2, self.height / 2))
         self.collider.static = true
-        game.physics:register(self.collider)
 
         self.tag = tag or "tile"
     end
 }
+
+function Tile:on_create()
+    game.physics:register(self.collider)
+    self.collider:set_layer(game.physics, "level")
+end
 
 function Tile:update(dt)
     self.sprite:update()

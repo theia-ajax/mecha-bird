@@ -8,6 +8,7 @@ require 'util'
 require 'physics'
 require 'input'
 require 'hud'
+require 'tornado'
 
 Game = Class {
     name = "Game",
@@ -52,6 +53,8 @@ function Game:initialize()
     }
     console_print_intro(self.name, self.version)
 
+    love.math.setRandomSeed(love.timer.getTime())
+
     self.debug.physics = false
     self.debug.bird = false
 
@@ -72,6 +75,14 @@ function Game:initialize()
 
     self.hud = Hud(bird)
     
+    local tornadoCount = 100
+    for i = 1, tornadoCount do
+        local tornado = Tornado()
+        tornado.position.x = i * 128
+        tornado.position.y = love.math.random() * game.screen.height
+        t = add_entity(tornado)
+    end
+
     self.reset = function()
         bird:reset()
         self.level:reset()

@@ -8,7 +8,7 @@ Bird = Class
 {
     name = "Bird",
     inherits = { Entity },
-    function(self, id)
+    function(self)
         Entity.construct(self)
 
         self.sprite = Sprite("assets/bird.png", self)
@@ -26,8 +26,7 @@ Bird = Class
         self.killY = game.screen.height + 128
 
         self.collider = BoundingBox(self, 32, 32, Vector(16, 16))
-        game.physics:register(self.collider)
-
+        
         self.tag = "bird"
     end
 }
@@ -46,6 +45,11 @@ function Bird:reset()
     self.glidePower = self.maxGlidePower
 
     self.sprite:update()
+end
+
+function Bird:on_create()
+    game.physics:register(self.collider)
+    self.collider:set_layer(game.physics, "player")
 end
 
 function Bird:update(dt)
@@ -117,6 +121,8 @@ function Bird:update(dt)
 end    
 
 function Bird:on_collision_enter(other)
+    if game.debug.bird then return end
+
     if other.anchor.tag == "ground" then
         local threshold = other.anchor.position.y -
                           other.anchor.sprite.height / 2 +
@@ -129,6 +135,9 @@ function Bird:on_collision_enter(other)
         end
     elseif other.anchor.tag == "lava" then
         game:reset()
+    elseif other.anchor.tag == "tornado" then
+        self.velocity.y = -other.anchor.liftPower
+        self.glidePower = self.glidePower + 25
     end
 end
 

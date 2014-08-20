@@ -7,7 +7,7 @@ local max = math.max
 BoundingBox = Class {
     name = "BoundingBox",
     inherits = {},
-    function(self, entity, w, h, offset)
+    function(self, entity, w, h, offset, layer)
         self.anchor = nil
 
         if entity ~= nil then
@@ -27,6 +27,7 @@ BoundingBox = Class {
         self.activeCollisions = {}
         self.collisionCount = 0
         self.id = 0
+        self.layer = layer or "default"
 
         self.inCells = {}
     end
@@ -36,6 +37,14 @@ function BoundingBox:attach(entity)
     if entity ~= nil then
         self.anchor = entity
     end
+end
+
+function BoundingBox:set_layer(physics, layer)
+    if physics.layerMatrix[layer] == nil then
+        return
+    end
+
+    self.layer = layer
 end
 
 function BoundingBox:center()
@@ -102,6 +111,12 @@ function BoundingBox:intersects(other)
 end
 
 function BoundingBox:on_enter(other)
+    if self.anchor ~= nil and other.anchor ~= nil then
+        if self.anchor.tag == other.anchor.tag then
+            return
+        end
+    end
+
     self.activeCollisions[other.id] = true
     self.collisionCount = self.collisionCount + 1
 
@@ -188,8 +203,68 @@ Physics = Class {
                 h = self.cellHeight,
             }
         end
+
+        self:buildLayerMatrix("data/physlayers.txt")
     end
 }
+
+function Physics:buildLayerMatrix(filename)
+    self.layerMatrix = {}
+    self.layers = {}
+
+    print("Loading physics data: "..filename)
+    if not love.filesystem.isFile(filename) then
+        print("File not found: "..filename)
+        print("Reverting physics to default layer data.")        
+        self.layerMatrix["default"] = {}
+        self.layerMatrix["default"]["default"] = 1
+        return
+    end
+
+    local delimeter = "\t"
+    local firstLine = true
+    for line in love.filesystem.lines(filename) do
+        if firstLine then
+            firstLine = false
+
+            local layers = string.split(line, delimeter)
+            for _, l in ipairs(layers) do
+                if #l > 0 then
+                    table.insert(self.layers, l)
+                    self.layerMatrix[l] = {}
+                end
+            end
+        else
+            tokens = string.split(line, delimeter)
+            local layer = ""
+            for i, t in ipairs(tokens) do
+                if i == 1 then
+                    layer = t
+                else
+                    local num = tonumber(t)
+                    self.layerMatrix[layer][self.layers[i - 1]] = num
+                    self.layerMatrix[self.layers[i - 1]][layer] = num
+                end
+            end
+        end
+    end
+end
+
+function Physics:layers_collide(lyr1, lyr2)
+    if lyr1 == nil or lyr2 == nil then
+        return true
+    end
+
+    if self.layerMatrix == nil then
+        return true
+    end
+
+    if self.layerMatrix[lyr1] == nil or self.layerMatrix[lyr2] == nil then
+        return true
+    end
+
+    return self.layerMatrix[lyr1][lyr2] > 0
+end
 
 function Physics:register(collider)
     collider.id = self.currentId
@@ -262,6 +337,7 @@ function Physics:calc_cells(collider)
 end
 
 function Physics:unregister(collider)
+    -- find the index of the collider
     local index = 0
     for i, c in ipairs(self.colliders) do
         if c.id == collider.id then
@@ -271,7 +347,34 @@ function Physics:unregister(collider)
     end
 
     if index > 0 then
+        -- call exit on all colliders currently being collided with
+        for id, active in pairs(collider.activeCollisions) do
+            if active then
+                self:collider_by_id(id):on_exit(collider)
+            end
+        end
+
+        -- remove the collider from all cells it is in
+        for _, cell in ipairs(collider.inCells) do
+            for i, c in ipairs(self.cells[cell]) do
+                if c.id == collider.id then
+                    table.remove(self.cells[cell], i)
+                    break
+                end
+            end
+        end
+
+        -- remove the collider
         table.remove(self.colliders, index)
+    end
+end
+
+function Physics:collider_by_id(id)
+    local index = 0
+    for i, c in ipairs(self.colliders) do
+        if c.id == id then
+            return self.colliders[i]
+        end
     end
 end
 
@@ -284,7 +387,13 @@ function Physics:cell_at_point(point)
     local x = math.floor(point.x / self.cellWidth)
     local y = math.floor((game.screen.height - point.y) / self.cellHeight)
 
-    return (y * self.cellCols + x) + 1
+    local cell = (y * self.cellCols + x) + 1
+    
+    if cell > #self.cells then
+        return -1
+    else
+        return cell
+    end
 end
 
 function Physics:determine_cells(collider)
@@ -352,7 +461,7 @@ function Physics:update_collisions()
                 local c1 = cell[i]
                 local c2 = cell[j]
 
-                if c1.enabled and c2.enabled and not (c1.static and c2.static) then
+                if self:valid_collision(c1, c2) then
                     game.collChecks = game.collChecks + 1
                     local intersects = c1:intersects(c2)
                     if c1.activeCollisions[c2.id] then
@@ -375,6 +484,11 @@ function Physics:update_collisions()
     end
 
     self:update_colliders()
+end
+
+function Physics:valid_collision(c1, c2)
+    return c1.enabled and c2.enabled and not (c1.static and c2.static) and 
+           self:layers_collide(c1.layer, c2.layer)
 end
 
 function Physics:update_colliders(statics)

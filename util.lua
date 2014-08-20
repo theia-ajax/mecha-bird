@@ -26,6 +26,8 @@ function split_str(str, delimeter)
     return temp
 end
 
+string.split = split_str
+
 function console_print_intro(name, version)
     print(" "..name.." v"..version.." ".._VERSION)
     print()
@@ -37,7 +39,12 @@ end
 
 quit = love.event.quit
 exit = quit
-print = function(...) game.console:print(...) end
+
+_print = print
+print = function(...)
+    game.console:print(...)
+    _print(...)
+end
 
 function set_screen_scale(scale)
     game.screen.windowWidth = game.screen.width * scale
