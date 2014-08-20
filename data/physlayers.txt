@@ -1,5 +1,5 @@
 	default	player	level	environment
-default	1	1	1	1
-player	1	1	1	1
-level	1	1	1	0
-environment	1	1	0	1
+default		1	1	1	1
+player		1	1	1	1
+level		1	1	1	0
+environment	1	1	0	0

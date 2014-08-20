@@ -84,6 +84,30 @@ function camera:detach()
 	love.graphics.pop()
 end
 
+function camera:left()
+	local w = love.graphics.getWidth() / 2
+	return self.x - w * self.scale
+end
+
+function camera:right()
+	local w = love.graphics.getWidth() / 2
+	return self.x - w * self.scale
+end
+
+function camera:top()
+	local h = love.graphics.getHeight() / 2
+	return self.y - h * self.scale
+end
+
+function camera:bottom()
+	local h = love.graphics.getHeight() / 2
+	return self.y - h * self.scale
+end
+
+function camera:bounds_lrtb()
+	return self:left(), self:right(), self:top(), self:bottom()
+end
+
 function camera:draw(func)
 	self:attach()
 	func()

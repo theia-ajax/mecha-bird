@@ -13,8 +13,10 @@ Bird = Class
 
         self.sprite = Sprite("assets/bird.png", self)
 
-        self.gravity = 1000
-        self.glideFall = 50
+        self.speed = 400
+        self.jumpPower = 1000
+        self.gravity = 2000
+        self.glideFall = 100
         self.maxJumps = 1
 
         self.maxGlidePower = 100
@@ -25,17 +27,17 @@ Bird = Class
 
         self.killY = game.screen.height + 128
 
-        self.collider = BoundingBox(self, 32, 32, Vector(16, 16))
+        self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
         
         self.tag = "bird"
     end
 }
 
 function Bird:reset()
-    self.velocity = Vector.new(200, 0)
+    self.velocity = Vector.new(self.speed, 0)
     
     self.position.x = 50 * game.screen.scale
-    self.position.y = game.level:ground_height(self.position.x) - self.sprite.height / 2
+    self.position.y = game.level:ground_height(self.position.x) - self.sprite.height * game.screen.scale
     
     self.onGround = false
 
@@ -70,7 +72,7 @@ function Bird:update(dt)
 
     if game.input:button_down("jump") and self.jumpCount < self.maxJumps then
         self.onGround = false
-        self.velocity.y = -500
+        self.velocity.y = -self.jumpPower
         self.jumpCount = self.jumpCount + 1
     end
 
@@ -124,11 +126,10 @@ function Bird:on_collision_enter(other)
     if game.debug.bird then return end
 
     if other.anchor.tag == "ground" then
-        local threshold = other.anchor.position.y -
-                          other.anchor.sprite.height / 2 +
+        local threshold = other:top() +
                           (8 * game.screen.scale)
 
-        if self.position.y > threshold then
+        if self.collider:bottom() > threshold then
             game:reset()
         else
             self:snap_to_ground(other)
@@ -148,7 +149,7 @@ function Bird:on_collision_exit(other)
 end
 
 function Bird:snap_to_ground(ground)
-    self.position.y = ground.anchor.position.y - 32
+    self.position.y = ground.anchor.position.y - 64
     self.onGround = true
     self.sprite:update()
 end

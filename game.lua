@@ -32,8 +32,8 @@ Game = Class {
 }
 
 function Game:initialize()
-    self.screen.width = 640
-    self.screen.height = 360
+    self.screen.width = 1280
+    self.screen.height = 720
 
     self.screen.windowWidth = love.graphics.getWidth()
     self.screen.windowHeight = love.graphics.getHeight()
@@ -45,7 +45,7 @@ function Game:initialize()
                                self.screen.windowWidth,
                                200,
                                4,
-                               function() self.input:enable() end)
+                           function() self.input:enable() end)
 
     self.console.commands = {
         quit = quit,
@@ -60,12 +60,12 @@ function Game:initialize()
 
     self.camera = Camera(400, 300)
 
-    self.physics = Physics(10000, 500, 250, 250)
+    self.physics = Physics(100000, 1000, 500, 500)
 
     self.entities = {}
     self.entities.lock = false
 
-    self.levelName = "assets/levels/testlevel.csv"
+    self.levelName = "assets/levels/testlevel.txt"
     self.level = Level()
     self.level:load(self.levelName)
 
@@ -78,7 +78,7 @@ function Game:initialize()
     local tornadoCount = 100
     for i = 1, tornadoCount do
         local tornado = Tornado()
-        tornado.position.x = i * 128
+        tornado.position.x = i * 10000
         tornado.position.y = love.math.random() * game.screen.height
         t = add_entity(tornado)
     end

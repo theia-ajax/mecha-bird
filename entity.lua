@@ -9,7 +9,7 @@ Entity = Class
         self.id = 0
         self.position = Vector.zero()
         self.rotation = 0
-        self.scale = Vector.one() * 0.5
+        self.scale = Vector.one()
         self.tag = "default"
         self.destroy = false
     end

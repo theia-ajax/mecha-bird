@@ -16,7 +16,7 @@ Tornado = Class
 		self.liftPower = 500
 		self.speed = 50
 
-		self.collider = BoundingBox(self, 32, 32, Vector(16, 16))
+		self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
 
 		self.tag = "tornado"
 	end

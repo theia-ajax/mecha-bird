@@ -86,7 +86,8 @@ function Level:load(filename)
     local row = 0
     local col = 0
 
-    for line in love.filesystem.lines(filename) do
+    for l in love.filesystem.lines(filename) do
+        local line = string.trim(l)
     	local first = string.sub(line, 1, 1)
         if string.len(line) == 0 then
             -- nothing
@@ -104,19 +105,19 @@ function Level:load(filename)
                 end
             end
 
-            local s = split_str(string.sub(line, eqIndex + 1), ",")
+            local s = string.split(string.sub(line, eqIndex + 1))
             local value = tonumber(s[1])
 
             data[var] = value
         elseif first == ">" then
-            local s = split_str(string.sub(line, 2), ",")
+            local s = string.split(string.sub(line, 2))
             table.insert(data.assets, { file = s[1], tag = s[2] })
         elseif first == "^" then
-        	local s = split_str(string.sub(line, 2), ",")
+        	local s = string.split(string.sub(line, 2))
         	data.assets.background = s[1]
         else
             row = row + 1
-            for k, v in pairs(split_str(line, ",")) do
+            for k, v in pairs(string.split(line)) do
                 col = col + 1
                 local index = (row - 1) * width + (col - 1) + 1
                 data[index] = tonumber(v)

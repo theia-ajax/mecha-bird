@@ -150,6 +150,11 @@ function BoundingBox:debug_draw()
     local top = self:top() * game.screen.scale
     local bottom = self:bottom() * game.screen.scale
 
+    local cl, cr, ct, cb = game.camera:bounds_lrtb()
+    if left < cl and right > cr and top < ct and bottom > cb then
+        return
+    end
+
     if self:is_colliding() then
         love.graphics.setColor(255, 0, 0)
     else
@@ -163,7 +168,9 @@ function BoundingBox:debug_draw()
                             self.height * game.screen.scale)
     
     love.graphics.setColor(0, 0, 0, 127)
-    love.graphics.rectangle("fill", left, top, self.width * 2, self.height * 2)
+    love.graphics.rectangle("fill", left, top,
+                            self.width * game.screen.scale,
+                            self.height * game.screen.scale)
     love.graphics.setColor(0, 255, 0)
     for i, c in ipairs(self.inCells) do
         local x = left
@@ -227,12 +234,10 @@ function Physics:buildLayerMatrix(filename)
         if firstLine then
             firstLine = false
 
-            local layers = string.split(line, delimeter)
+            local layers = string.split(string.trim(line), delimeter)
             for _, l in ipairs(layers) do
-                if #l > 0 then
-                    table.insert(self.layers, l)
-                    self.layerMatrix[l] = {}
-                end
+                table.insert(self.layers, l)
+                self.layerMatrix[l] = {}
             end
         else
             tokens = string.split(line, delimeter)
@@ -242,6 +247,9 @@ function Physics:buildLayerMatrix(filename)
                     layer = t
                 else
                     local num = tonumber(t)
+                    if layer == "environment" then
+                        print(num)
+                    end
                     self.layerMatrix[layer][self.layers[i - 1]] = num
                     self.layerMatrix[self.layers[i - 1]][layer] = num
                 end
@@ -504,12 +512,21 @@ function Physics:debug_draw()
         c:debug_draw()
     end
 
+    local cl, cr, ct, cb = game.camera:bounds_lrtb()
+
     love.graphics.setColor(255, 255, 0)
     for _, cell in ipairs(self.cells) do
-        love.graphics.rectangle("line",
-                                cell.bounds.x * game.screen.scale,
-                                cell.bounds.y * game.screen.scale,
-                                cell.bounds.w * game.screen.scale,
-                                cell.bounds.h * game.screen.scale)
+        local bl = cell.bounds.x * game.screen.scale
+        local br = (cell.bounds.x + cell.bounds.w) * game.screen.scale
+        local bt = cell.bounds.y * game.screen.scale
+        local bb = (cell.bounds.y + cell.bounds.h) * game.screen.scale
+
+        if bl >= cl or br <= cr or bt >= ct or bb <= cb then
+            love.graphics.rectangle("line",
+                                    cell.bounds.x * game.screen.scale,
+                                    cell.bounds.y * game.screen.scale,
+                                    cell.bounds.w * game.screen.scale,
+                                    cell.bounds.h * game.screen.scale)
+        end
     end
 end
