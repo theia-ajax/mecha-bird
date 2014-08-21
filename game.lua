@@ -9,6 +9,7 @@ require 'physics'
 require 'input'
 require 'hud'
 require 'tornado'
+require 'background'
 
 Game = Class {
     name = "Game",
@@ -95,6 +96,8 @@ function Game:initialize()
 
     self.input = Input()
     self.input:add_button("jump", "z", "lctrl", "lgui", " ")
+
+    self.background = Background()
 end
 
 function Game:update(dt)
@@ -104,7 +107,7 @@ function Game:update(dt)
         v:update(dt)
     end
 
-    self.level:update(dt)
+    -- self.level:update(dt)
 
     flush_dirty_entities()
     
@@ -123,9 +126,11 @@ function Game:update(dt)
 end
 
 function Game:render()
+    self.background:render()
+
     self.camera:attach()
 
-    self.level:render()
+    -- self.level:render()
 
     for i, v in ipairs(self.entities) do
         if v ~= nil then
