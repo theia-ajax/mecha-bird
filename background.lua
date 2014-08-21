@@ -10,7 +10,7 @@ Background = Class {
 		self.skyboxGradientFile = "assets/daynight.png"
 		self.skyboxGradient = love.graphics.newImage(self.skyboxGradientFile)
 		self.skyWidth, self.skyHeight = self.skyboxGradient:getDimensions()
-		self.skyboxPosition = 50
+		self.skyboxPosition = 60
 		self.skyboxQuad = love.graphics.newQuad(self.skyboxPosition, 0,
 												1, self.skyHeight,
 												self.skyWidth, self.skyHeight)
