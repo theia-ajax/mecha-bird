@@ -137,7 +137,7 @@ function Bird:on_collision_enter(other)
     elseif other.anchor.tag == "lava" then
         game:reset()
     elseif other.anchor.tag == "tornado" then
-        self.velocity.y = -other.anchor.liftPower
+        self.velocity.y = self.velocity.y - other.anchor.liftPower
         self.glidePower = self.glidePower + 25
     end
 end

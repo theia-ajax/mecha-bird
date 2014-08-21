@@ -60,7 +60,7 @@ function Game:initialize()
 
     self.camera = Camera(400, 300)
 
-    self.physics = Physics(100000, 1000, 500, 500)
+    self.physics = Physics(50000, 1000, 500, 500)
 
     self.entities = {}
     self.entities.lock = false
@@ -78,7 +78,7 @@ function Game:initialize()
     local tornadoCount = 100
     for i = 1, tornadoCount do
         local tornado = Tornado()
-        tornado.position.x = i * 10000
+        tornado.position.x = i * 128
         tornado.position.y = love.math.random() * game.screen.height
         t = add_entity(tornado)
     end
@@ -111,7 +111,7 @@ function Game:update(dt)
     -- local look = self.player:get_component("CPositionable").position
     -- self.camera:lookAt(math.floor(look.x), math.floor(look.y))
     local look_x = self.bird.position.x + (self.screen.width / 2 - 50)
-    local look_y = self.screen.height / 2
+    local look_y = math.min(self.screen.height / 2, self.bird.position.y + (self.screen.height / 4))
     self.camera:lookAt(look_x * self.screen.scale, look_y * self.screen.scale)
     
     self.console:update(dt)
