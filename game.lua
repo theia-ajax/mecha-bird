@@ -76,7 +76,7 @@ function Game:initialize()
 
     self.hud = Hud(bird)
     
-    local tornadoCount = 100
+    local tornadoCount = 0
     for i = 1, tornadoCount do
         local tornado = Tornado()
         tornado.position.x = i * 128
@@ -102,6 +102,8 @@ end
 
 function Game:update(dt)
     self.dt = dt
+
+    self.background:update(dt)
 
     for i, v in ipairs(self.entities) do
         v:update(dt)

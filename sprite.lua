@@ -42,11 +42,11 @@ function Sprite:update()
     self.scale.y = self.entity.scale.y
 end
 
-function Sprite:render()
+function Sprite:render(r, g, b)
     local px = self.position.x * game.screen.scale
     local py = self.position.y * game.screen.scale
 
-    local r = self.rotation
+    local rot = self.rotation
 
     local sx = self.scale.x * game.screen.scale
     local sy = self.scale.y * game.screen.scale
@@ -55,6 +55,10 @@ function Sprite:render()
     local ox = 0
     local oy = 0
 
-    love.graphics.setColor(255, 255, 255)
-    love.graphics.draw(self.image, px, py, r, sx, sy, ox, oy)
+    r = r or 255
+    g = g or 255
+    b = b or 255
+
+    love.graphics.setColor(r, g, b)
+    love.graphics.draw(self.image, px, py, rot, sx, sy, ox, oy)
 end

@@ -1,5 +1,11 @@
 Timer = require 'hump.timer'
 
+function split_str(str, delimeter)
+    local result = {}
+    for w in str:gmatch(pattern) do table.insert(result, w) end
+    return result
+end
+
 function split_str_whitespace(str)
     local result = {}
     for w in str:gmatch("%S+") do table.insert(result, w) end

@@ -69,7 +69,7 @@ function console:onCommand(cmd)
 
     local ok, out = pcall(function() assert(loadstring(self.chunk))() end)
     if not ok and out:match("'<eof>'") then
-        local tokens = split_str(cmd, ".")
+        local tokens = split_str(cmd, "%p")
         if tokens ~= nil then
             local table = _G
             for i, t in ipairs(tokens) do
