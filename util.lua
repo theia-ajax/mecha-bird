@@ -1,4 +1,5 @@
 Timer = require 'hump.timer'
+json = require 'json'
 
 function split_str(str, delimeter)
     local result = {}
@@ -50,3 +51,19 @@ function restart()
     os.execute("love .")
     quit()
 end
+
+function load_file(filename)
+    print("Loading file "..filename.."...")
+    if not love.filesystem.isFile(filename) then
+        print("File not found: "..filename)
+        return
+    end
+
+    return love.filesystem.read(filename)
+end
+
+function load_json(filename)
+    return json.parse(load_file(filename))
+end
+
+a = function() return load_json("test.json") end

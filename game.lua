@@ -149,10 +149,11 @@ function Game:render()
     self.hud:render()
 
     love.graphics.setColor(0, 0, 0, 127)
-    love.graphics.rectangle("fill", 2, 2, 150, 40)
+    love.graphics.rectangle("fill", 2, 2, 150, 60)
     love.graphics.setColor(255, 255, 255)
     love.graphics.print("FPS : "..string.format("%.0f", self.fps), 5, 5)
     love.graphics.print("Collision Checks: "..string.format("%.0f", self.collChecks), 5, 25)
+    love.graphics.print("Time of Day: "..game.background:time_string(), 5, 45)
 
     self.console:draw()
 

@@ -8,8 +8,9 @@ Background = Class {
 	name = "Background",
 	function(self)
 		self.dayHours = 24
-		self.time = 10
-		self.timeScale = 2400
+		self.time = 0
+		self:set_time(4, 30)
+		self.timeScale = 240
 		self.kSecondsToHours = 1 / 3600
 
 		self.skyboxGradientFile = "assets/daynight.png"
@@ -32,8 +33,9 @@ Background = Class {
 		end
 
 		self.bgLayers = {}
-		self:add_background_layer("assets/mountain.png", 8, 450)
-		self:add_background_layer("assets/tree.png", 2, 400)
+		self:add_background_layer("assets/mountain.png", 8, 600, 0.3, 2)
+		self:add_background_layer("assets/mountain.png", 6, 475, 0, 1)
+		-- self:add_background_layer("assets/tree.png", 2, 400)
 		
 		self.multiplyColor = {
 			r = 255,
@@ -43,8 +45,36 @@ Background = Class {
 	end
 }
 
-function Background:add_background_layer(file, ratio, anchor)
-	table.insert(self.bgLayers, BackgroundLayer(file, ratio, anchor))
+function Background:add_background_layer(file, ratio, anchor, offset, scale)
+	table.insert(self.bgLayers, BackgroundLayer(file,
+												ratio,
+												anchor,
+												offset,
+												scale))
+end
+
+function Background:set_time(hours, minutes)
+	while minutes < 0 do
+		hours = hours - 1
+		minutes = minutes + 60
+	end
+
+	while minutes >= 60 do
+		hours = hours + 1
+		minutes = minutes - 60
+	end
+
+	self.time = hours + (minutes / 60)
+
+	while self.time < 0 do self.time = self.time + 24 end
+	while self.time >= 24 do self.time = self.time - 24 end
+end
+
+function Background:time_string()
+	local hours = math.floor(self.time)
+	local minutes = math.floor((self.time - hours) * 60)
+
+	return string.format("%02.0f:%02.0f", hours, minutes)
 end
 
 function Background:update(dt)
@@ -103,15 +133,21 @@ end
 
 BackgroundLayer = Class {
 	name = "BackgroundLayer",
-	function(self, file, moveRatio, verticalAnchor)
+	function(self, file, moveRatio, verticalAnchor, offset, scale)
 		self.file = file
 		self.moveRatio = moveRatio or 1
 		self.verticalAnchor = verticalAnchor or 0
+		self.offset = offset or 0
+		self.scale = scale or 1
 
 		self.image = love.graphics.newImage(self.file)
 		self.image:setWrap("repeat", "repeat")
 
+		self.verticalAnchor = self.verticalAnchor / self.scale
+
 		self.width, self.height = self.image:getDimensions()
+		self.width = self.width * self.scale
+		self.height = self.height * self.scale
 		self.quad = love.graphics.newQuad(0, 0,
 										  game.screen.width,
 										  self.height,
@@ -121,7 +157,7 @@ BackgroundLayer = Class {
 }
 
 function BackgroundLayer:set_horizontal_position(x)
-	local sx = x / self.moveRatio
+	local sx = x / self.moveRatio + (self.offset * self.width)
 
 	self.quad:setViewport(sx, 0, game.screen.width, self.height)
 end

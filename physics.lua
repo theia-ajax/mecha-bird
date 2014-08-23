@@ -228,28 +228,24 @@ function Physics:buildLayerMatrix(filename)
         return
     end
 
-    local delimeter = "\t"
     local firstLine = true
     for line in love.filesystem.lines(filename) do
         if firstLine then
             firstLine = false
 
-            local layers = string.split(string.trim(line), delimeter)
+            local layers = string.split(string.trim(line))
             for _, l in ipairs(layers) do
                 table.insert(self.layers, l)
                 self.layerMatrix[l] = {}
             end
         else
-            tokens = string.split(line, delimeter)
+            tokens = string.split(line)
             local layer = ""
             for i, t in ipairs(tokens) do
                 if i == 1 then
                     layer = t
                 else
                     local num = tonumber(t)
-                    if layer == "environment" then
-                        print(num)
-                    end
                     self.layerMatrix[layer][self.layers[i - 1]] = num
                     self.layerMatrix[self.layers[i - 1]][layer] = num
                 end
