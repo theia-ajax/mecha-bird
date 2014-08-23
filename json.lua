@@ -57,6 +57,10 @@ local function is_num(str)
     return num_chars:find(str) ~= nil
 end
 
+local function is_valid_string_char(str)
+    return str ~= tokens.quote and str ~= tokens.comma and not is_whitespace(str)
+end
+
 local function next_token(str, index)
     local len = string.len(str)
 
@@ -70,8 +74,7 @@ local function next_token(str, index)
             return { value = front, __type = types.syntax }, frontIndex + 1
         elseif is_char(front) then
             while backIndex <= len and
-                  str:sub(backIndex, backIndex) ~= tokens.quote and
-                  not is_whitespace(str:sub(backIndex, backIndex)) do
+                  is_valid_string_char(str:sub(backIndex, backIndex)) do
                 backIndex = backIndex + 1
             end
             backIndex = backIndex - 1
@@ -161,7 +164,7 @@ local function parse_array(str, index)
 
             -- REMOVE THIS TO IGNORE TRALING COMMAS
             if foundComma then
-                return nil, nil, gen_error("Trailing comma")
+                return nil, nil, gen_error("Trailing comma", index)
             end
 
             index = i
@@ -210,7 +213,7 @@ local function parse_object(str, index)
 
             -- REMOVE THIS TO IGNORE TRALING COMMAS
             if foundComma then
-                return nil, nil, gen_error("Trailing comma")
+                return nil, nil, gen_error("Trailing comma", index)
             end
 
             index = i
