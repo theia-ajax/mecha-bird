@@ -65,5 +65,3 @@ end
 function load_json(filename)
     return json.parse(load_file(filename))
 end
-
-a = function() return load_json("test.json") end
