@@ -1,6 +1,7 @@
 Class = require 'hump.class'
 Vector = require 'hump.vector'
 Camera = require 'hump.camera'
+Tween = require 'tween'
 require 'bird'
 require 'tile'
 require 'level'
@@ -57,7 +58,7 @@ function Game:initialize()
     love.math.setRandomSeed(love.timer.getTime())
 
     self.debug.physics = false
-    self.debug.bird = false
+    self.debug.bird = true
 
     self.camera = Camera(400, 300)
 
@@ -76,7 +77,7 @@ function Game:initialize()
 
     self.hud = Hud(bird)
     
-    local tornadoCount = 0
+    local tornadoCount = 100
     for i = 1, tornadoCount do
         local tornado = Tornado()
         tornado.position.x = i * 128
@@ -121,6 +122,7 @@ function Game:update(dt)
     
     self.console:update(dt)
     Timer.update(dt)
+    Tween.update(dt)
 
     self.physics:update_collisions()
 
