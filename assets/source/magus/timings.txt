@@ -1,0 +1,12 @@
+mageAttack00 (0.5 sec)
+mageAttack01 (0 sec)
+mageAttack02 (0.1 sec)
+mageAttack03 (0.5 sec)
+mageAttack04 (0 sec)
+mageAttack03 (0 sec)
+mageAttack04 (0 sec)
+mageAttack05 (0 sec)
+mageAttack06 (0.5 sec)
+mageAttack07 (0.1 sec)
+
+mageIdle (0.5 sec for all frames) and mageWalk (0.2 sec for all frames)

@@ -1,4 +1,5 @@
 Class = require 'hump.class'
+Assets = require 'assets'
 require 'entity'
 require 'tile'
 require 'util'
@@ -54,18 +55,6 @@ function Level:build(data)
             end
         end
     end
-
-    -- if data.assets.background ~= nil then
-    -- 	self.background = data.assets.background
-    --     local maxBgs = 2
-    -- 	for i = 1, maxBgs do
-    -- 		local bgSprite = Sprite(data.assets.background)
-    -- 		bgSprite.position.x = bgSprite.width * (i - 1)
-    --         table.insert(self.bgSprites, bgSprite)
-    -- 	end
-
-    --     self.bgRight = self.bgSprites[2]
-    -- end
 end
 
 function Level:load(filename)

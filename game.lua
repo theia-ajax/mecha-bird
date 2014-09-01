@@ -11,6 +11,7 @@ require 'input'
 require 'hud'
 require 'tornado'
 require 'background'
+require 'atlas'
 
 Game = Class {
     name = "Game",
@@ -99,6 +100,10 @@ function Game:initialize()
     self.input:add_button("jump", "z", "lctrl", "lgui", " ")
 
     self.background = Background()
+
+    self.test_atlas = Atlas("assets/magus/magus")
+    self.test_atlas_sprite = Sprite(self.test_atlas.image)
+    self.test_atlas_sprite:set_source(self.test_atlas:get_frame_rect("mageAttack07"))
 end
 
 function Game:update(dt)
@@ -141,6 +146,8 @@ function Game:render()
             v:render()
         end
     end
+
+    self.test_atlas_sprite:render()
 
     if self.debug.physics then
         self.physics:debug_draw()

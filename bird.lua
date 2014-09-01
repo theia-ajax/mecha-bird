@@ -1,5 +1,6 @@
 Vector = require 'hump.vector'
 Class = require 'hump.class'
+Assets = require 'assets'
 require 'entity'
 require 'sprite'
 require 'physics'
@@ -11,7 +12,7 @@ Bird = Class
     function(self)
         Entity.construct(self)
 
-        self.sprite = Sprite("assets/bird.png", self)
+        self.sprite = Sprite(Assets.load_image("assets/bird.png"), self)
 
         self.speed = 400
         self.jumpPower = 1000
@@ -37,7 +38,8 @@ function Bird:reset()
     self.velocity = Vector.new(self.speed, 0)
     
     self.position.x = 50 * game.screen.scale
-    self.position.y = game.level:ground_height(self.position.x) - self.sprite.height * game.screen.scale
+    self.position.y = game.level:ground_height(self.position.x) -
+                      self.sprite:get_height() * game.screen.scale
     
     self.onGround = false
 

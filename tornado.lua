@@ -1,5 +1,6 @@
 Vector = require 'hump.vector'
 Class = require 'hump.class'
+Assets = require 'assets'
 require 'entity'
 require 'sprite'
 require 'physics'
@@ -11,7 +12,7 @@ Tornado = Class
     function(self)
         Entity.construct(self)
 
-        self.sprite = Sprite("assets/tornado.png", self)
+        self.sprite = Sprite(Assets.load_image("assets/tornado.png"), self)
 
         self.liftPower = 500
         self.speed = 50
@@ -19,17 +20,11 @@ Tornado = Class
         self.collider = BoundingBox(self, 64, 64, Vector(32, 32))
 
         self.tag = "tornado"
-
-        self.tween = Tween.add(0, 250, 2, Tween.functions.bounce_out,
-                               false)
     end
 }
 
 function Tornado:update(dt)
-    -- self.position.x = self.position.x - self.speed * dt
-
-    local y = self.baseHeight + self.tween:evaluate()
-    self.position.y = y
+    self.position.x = self.position.x - self.speed * dt
 
     self.sprite:update()
 end
@@ -47,8 +42,6 @@ end
 function Tornado:on_create()
     game.physics:register(self.collider)
     self.collider:set_layer(game.physics, "environment")
-
-    self.baseHeight = self.position.y
 end
 
 function Tornado:on_cleanup()

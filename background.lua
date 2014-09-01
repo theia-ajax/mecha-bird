@@ -9,7 +9,7 @@ Background = Class {
 	function(self)
 		self.dayHours = 24
 		self.time = 0
-		self:set_time(4, 30)
+		self:set_time(5, 30)
 		self.timeScale = 240
 		self.kSecondsToHours = 1 / 3600
 

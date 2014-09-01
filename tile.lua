@@ -1,5 +1,6 @@
 Class = require 'hump.class'
 Vector = require 'hump.vector'
+Assets = require 'assets'
 require 'entity'
 require 'sprite'
 require 'physics'
@@ -11,10 +12,10 @@ Tile = Class
     function(self, filename, tag)
         Entity.construct(self)
 
-        self.sprite = Sprite(filename, self)
+        self.sprite = Sprite(Assets.load_image(filename), self)
 
-        self.width = self.sprite.width
-        self.height = self.sprite.height
+        self.width = self.sprite:get_width()
+        self.height = self.sprite:get_height()
 
         self.wrap = false
 

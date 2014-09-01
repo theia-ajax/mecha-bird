@@ -6,7 +6,7 @@ Sprite = Class
 {
     name = "Sprite",
     inherits = {},
-    function(self, filename, entity)
+    function(self, image, entity, srcRect)
         self.entity = entity
         self.attachToEntity = false
 
@@ -18,17 +18,37 @@ Sprite = Class
         self.rotation = 0
         self.scale = Vector.one()
 
-        self.image = love.graphics.newImage(filename)
+        self.image = image
+        assert(self.image ~= nil, "Cannot create sprite with nil image.")
 
-        self.width = 0
-        self.height = 0
+        local iw, ih = self.image:getDimensions()
 
-        if self.image ~= nil then
-            self.width = self.image:getWidth()
-            self.height = self.image:getHeight()
-        end
+        self.quad = love.graphics.newQuad(0, 0, iw, ih, iw, ih)
+
+        self.source = { x = 0, y = 0, w = iw, h = ih }
+        self:set_source(srcRect)
     end
 }
+
+function Sprite:set_source(srcRect)
+    if srcRect == nil then return end
+
+    self.source.x = srcRect.x
+    self.source.y = srcRect.y
+    self.source.w = srcRect.w
+    self.source.h = srcRect.h
+        
+    self.quad:setViewport(self.source.x, self.source.y,
+                          self.source.w, self.source.h)
+end
+
+function Sprite:get_width()
+    return self.source.w
+end
+
+function Sprite:get_height()
+    return self.source.h
+end
 
 function Sprite:update()
     if self.entity == nil or not self.attachToEntity then return end
@@ -60,5 +80,5 @@ function Sprite:render(r, g, b)
     b = b or 255
 
     love.graphics.setColor(r, g, b)
-    love.graphics.draw(self.image, px, py, rot, sx, sy, ox, oy)
+    love.graphics.draw(self.image, self.quad, px, py, rot, sx, sy, ox, oy)
 end

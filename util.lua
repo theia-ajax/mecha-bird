@@ -1,7 +1,7 @@
 Timer = require 'hump.timer'
 json = require 'json'
 
-function split_str(str, delimeter)
+function split_str(str, pattern)
     local result = {}
     for w in str:gmatch(pattern) do table.insert(result, w) end
     return result
@@ -64,4 +64,19 @@ end
 
 function load_json(filename)
     return json.parse(load_file(filename))
+end
+
+function get_path(filename)
+    local len = string.len(filename)
+
+    local index = 0
+    for i = len, 1, -1 do
+        local sub = filename:sub(i, i)
+        if sub == "/" then
+            index = i
+            break
+        end
+    end
+
+    return filename:sub(1, index)
 end
