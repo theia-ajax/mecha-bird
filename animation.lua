@@ -1,6 +1,7 @@
 Class = require 'hump.class'
 
-Animation = Class {
+Animation = Class 
+{
     name = "Animation",
     function(self, animName, atlas, frameCount, delays)
         assert(animName ~= nil, "Animation requires animation name.")
@@ -22,9 +23,9 @@ Animation = Class {
 
         local err = self:get_frames()
 
-        assert(err ~= nil, "Error decoding animation frames: "..err)
+        --assert(err == nil, "Error decoding animation frames: "..err)
 
-        self.paused = false
+        self.paused = true
         self.timeScale = 1
         self.loop = false
         self.loopCount = math.huge
@@ -39,10 +40,10 @@ Animation = Class {
 function Animation:get_frames()
     self.frames = {}
 
-    for i = 1, maxFrames do
+    for i = 1, self.maxFrames do
         local index = i - 1
         local frameName = string.format("%s%02d", self.animName, index)
-        local frame = atlas.data.frames[frameName]
+        local frame = self.atlas.data.frames[frameName]
         if frame == nil then
             return "No frame named \'"..frameName.."\' in atlas \'"..self.atlas.atlasname.."\'"
         end
@@ -62,7 +63,7 @@ function Animation:play()
     self.paused = false
 end
 
-function Animation:loop(count)
+function Animation:play_loop(count)
     self:reset()
     self.loop = true
     self.loopCount = count or math.huge
@@ -99,7 +100,7 @@ function Animation:next_frame()
             self:pause()
             return false
         else
-            self.currentFrame = 0
+            self.currentFrame = 1
             return true
         end
     else
@@ -109,7 +110,9 @@ function Animation:next_frame()
 end
 
 function Animation:get_frame_rect()
-    return self.frames[self.currentFrame].frame
+    local f = self.frames[self.currentFrame]
+    print(self.currentFrame.." "..self.maxFrames)
+    return f.frame, f.spriteSourceSize
 end
 
 -- Returns true if animation switched to next frame
@@ -122,7 +125,16 @@ function Animation:update(dt)
 
     if self.frameTimer >= self:current_delay() then
         result = self:next_frame()
+        self.frameTimer = 0
     end
 
     return result
 end
+
+AnimationController = Class 
+{
+    name = "AnimationController",
+    function(self)
+        
+    end
+}

@@ -12,6 +12,7 @@ require 'hud'
 require 'tornado'
 require 'background'
 require 'atlas'
+require 'animation'
 
 Game = Class {
     name = "Game",
@@ -104,6 +105,9 @@ function Game:initialize()
     self.test_atlas = Atlas("assets/magus/magus")
     self.test_atlas_sprite = Sprite(self.test_atlas.image)
     self.test_atlas_sprite:set_source(self.test_atlas:get_frame_rect("mageAttack07"))
+    self.test_animation = Animation("mageAttack", self.test_atlas, 8, { 0.5, 0.05, 0.2, 0.5, 0.05, 0.05, 0.05, 0.05, 0.5, 0.1 })
+    self.test_animation:play_loop()
+    self.test_atlas_sprite:set_source(self.test_animation:get_frame_rect())
 end
 
 function Game:update(dt)
@@ -113,6 +117,10 @@ function Game:update(dt)
 
     for i, v in ipairs(self.entities) do
         v:update(dt)
+    end
+
+    if self.test_animation:update(dt) then
+        self.test_atlas_sprite:set_source(self.test_animation:get_frame_rect())
     end
 
     -- self.level:update(dt)

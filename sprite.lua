@@ -17,6 +17,7 @@ Sprite = Class
         self.position = Vector.zero()
         self.rotation = 0
         self.scale = Vector.one()
+        self.offset = { x = 0, y = 0 }
 
         self.image = image
         assert(self.image ~= nil, "Cannot create sprite with nil image.")
@@ -30,13 +31,18 @@ Sprite = Class
     end
 }
 
-function Sprite:set_source(srcRect)
+function Sprite:set_source(srcRect, offset)
     if srcRect == nil then return end
 
     self.source.x = srcRect.x
     self.source.y = srcRect.y
     self.source.w = srcRect.w
     self.source.h = srcRect.h
+
+    if offset ~= nil then
+        self.offset.x = offset.x
+        self.offset.y = offset.y
+    end
         
     self.quad:setViewport(self.source.x, self.source.y,
                           self.source.w, self.source.h)
@@ -63,8 +69,8 @@ function Sprite:update()
 end
 
 function Sprite:render(r, g, b)
-    local px = self.position.x * game.screen.scale
-    local py = self.position.y * game.screen.scale
+    local px = (self.position.x + self.offset.x) * game.screen.scale
+    local py = (self.position.y + self.offset.y) * game.screen.scale
 
     local rot = self.rotation
 
