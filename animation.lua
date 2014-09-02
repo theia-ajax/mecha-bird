@@ -3,13 +3,14 @@ Class = require 'hump.class'
 Animation = Class 
 {
     name = "Animation",
-    function(self, animName, atlas, frameCount, delays)
+    function(self, animName, atlas, frameCount, delays, priority)
         assert(animName ~= nil, "Animation requires animation name.")
         assert(atlas ~= nil, "Animation requires atlas.")
 
         self.animName = animName
         self.atlas = atlas
         self.maxFrames = frameCount or 1
+        self.priority = priority or 0
 
         if delays == nil then
             self.delays = { 1 }
@@ -30,6 +31,7 @@ Animation = Class
         self.loop = false
         self.loopCount = math.huge
 
+        self.isFinished = false
         self.onFinish = nil
 
         self.currentFrame = 1
@@ -53,6 +55,7 @@ function Animation:get_frames()
 end
 
 function Animation:reset()
+    self.isFinished = false
     self.currentFrame = 1
     self.frameTimer = 0
 end
@@ -78,6 +81,11 @@ function Animation:resume()
     self.paused = false
 end
 
+function Animation:stop()
+    self:reset()
+    self.paused = true
+end
+
 function Animation:current_delay()
     if self.currentFrame > #self.delays then
         return self.delays[#self.delays]
@@ -97,6 +105,7 @@ function Animation:next_frame()
                 self.onFinish(self)
             end
 
+            self.isFinished = true
             self:pause()
             return false
         else
@@ -111,7 +120,6 @@ end
 
 function Animation:get_frame_rect()
     local f = self.frames[self.currentFrame]
-    print(self.currentFrame.." "..self.maxFrames)
     return f.frame, f.spriteSourceSize
 end
 
@@ -131,10 +139,83 @@ function Animation:update(dt)
     return result
 end
 
+--[[
+{
+    "animName": {
+        "frameCount": n,
+        "delays": [
+            1,
+            2,
+            ...,
+            n
+        ],
+        "priority": 0
+        // transitions?
+    }
+}
+]]
+
 AnimationController = Class 
 {
     name = "AnimationController",
-    function(self)
-        
+    function(self, atlas, animData)
+        self.animations = {}
+
+        for anim, data in pairs(animData) do
+            self.animations[anim] = Animation(anim,
+                                              atlas,
+                                              animData.frameCount,
+                                              animData.delays,
+                                              animData.priority)
+        end
+
+        self.active = nil
     end
 }
+
+function AnimationController:animation_playable(animation)
+    assert(self.animations[animation] ~= nil,
+        "No animation found with name \'"..animation.."\'")
+
+    if self.active ~= nil then
+        if self.animations[animation] < self.active.priority then
+            return false
+        end
+    end
+
+    return true
+end
+
+function AnimationController:update_active(animation)
+    if self.active ~= nil then
+        self.active:stop()
+    end
+    self.active = self.animations[animation]
+end
+
+function AnimationController:play(animation)
+    if self:animation_playable(animation) then
+        self:update_active(animation)
+        self.animations[animation]:play()
+    end
+end
+
+function AnimationController:play_loop(animation, count)
+    if self:animation_playable(animation) then
+        self:update_active(animation)
+        self.animations[animation]:play_loop(count)
+    end
+end
+
+function AnimationController:get_frame_rect()
+    assert(self.active ~= nil,
+        "No active animation has been set.")
+
+    return self.active:get_frame_rect()
+end
+
+function AnimationController:update(dt)
+    if self.active ~= nil then
+        self.active:update(dt)
+    end
+end
