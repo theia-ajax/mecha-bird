@@ -142,7 +142,7 @@ end
 --[[
 {
     "animName": {
-        "frameCount": n,
+        "frames": n,
         "delays": [
             1,
             2,
@@ -158,13 +158,16 @@ end
 AnimationController = Class 
 {
     name = "AnimationController",
-    function(self, atlas, animData)
+    function(self, atlas, animName)
         self.animations = {}
+
+        local path = "assets/sheets/"..animName.."/"..animName.."_animations.json"
+        local animData = load_json(path)
 
         for anim, data in pairs(animData) do
             self.animations[anim] = Animation(anim,
                                               atlas,
-                                              animData.frameCount,
+                                              animData.frames,
                                               animData.delays,
                                               animData.priority)
         end
